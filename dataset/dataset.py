@@ -85,3 +85,12 @@ class Dataset:
         plt.ylabel('Height')
         plt.plot(width, height, '.r', label='Width x Height')
         plt.show()
+
+    def get_all_images(self):
+        return self.all_images
+
+    def get_train_images(self):
+        return self.train_images
+
+    def get_test_images(self):
+        return self.test_images
