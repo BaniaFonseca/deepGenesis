@@ -45,19 +45,13 @@ class Dataset:
 
     def show_mean_aspect_ratio(self):
         aspect_ratio = []
-        width = []
-        height = []
 
         for image in self.all_images:
             h, w, d = np.shape(image)
             aspect_ratio.append(float(w) / float(h))
-            width.append(w)
-            height.append(h)
 
         images = [i for i in range(1, aspect_ratio.__len__()+1)]
         aspect_ratio.sort()
-        height.sort()
-        width.sort()
         plt.title('Acpect Ratio')
         plt.text(np.mean(aspect_ratio), np.min(aspect_ratio), 'mean aspect ratio = '+str(np.mean(aspect_ratio)), horizontalalignment='left', verticalalignment='bottom', fontsize=11, fontweight='bold')
         plt.xlabel('image')
