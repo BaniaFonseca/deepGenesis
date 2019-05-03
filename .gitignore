@@ -1,2 +1,7 @@
 .venv
+input
+*.pyc
+*.lock
+__pycache__
+.idea
 
