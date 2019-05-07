@@ -1,5 +1,5 @@
 .venv
-input
+data
 *.pyc
 *.lock
 __pycache__
