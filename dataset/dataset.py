@@ -8,10 +8,7 @@ class Dataset:
         self.data_root = pathlib.Path(data_root)
         self.image_width = image_width
         self.image_height = image_height
-        self.all_image_paths = [str(path) for path in  list(self.data_root.glob('*/*'))]
-        random.shuffle(self.all_image_paths, random.seed(7*(len(self.all_image_paths))))
-
-
+        self.build_dataset()
 
     def preprocess_image(self, image):
         image = tf.image.decode_jpeg(image, channels=3)
@@ -22,3 +19,12 @@ class Dataset:
     def load_and_preprocess_image(self, path):
         image = tf.read_file(path)
         return self.preprocess_image(image)
+
+    def build_dataset(self):
+        self.all_image_paths = [str(path) for path in list(self.data_root.glob('*/*'))]
+        random.shuffle(self.all_image_paths, random.seed(7 * (len(self.all_image_paths))))
+        self.all_image_labes = [pathlib.Path(path).parent.name for path in self.all_image_paths]
+        self.path_ds = tf.data.Dataset.from_tensor_slices(self.all_image_paths)
+        self.image_ds = self.path_ds.map(self.load_and_preprocess_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+        self.labels_ds = tf.data.Dataset.from_tensor_slices(self.all_image_labes)
+        self.image_label_ds = tf.data.Dataset.zip((self.image_ds, self.labels_ds))

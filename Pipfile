@@ -9,6 +9,16 @@ verify_ssl = true
 tensorflow = "*"
 matplotlib = "*"
 pillow = "*"
+pip = "*"
+six = "*"
+numpy = "*"
+wheel = "*"
+setuptools = "*"
+mock = "*"
+keras_applications = "*"
+keras_preprocessing = "*"
+
+
 
 [requires]
 python_version = "3.7"
