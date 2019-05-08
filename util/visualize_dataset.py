@@ -29,12 +29,16 @@ class VisualizeDataset(Dataset):
         plt.plot(images, aspect_ratio, 'r')
         plt.show()
 
-    def show_mean_width_heigth(self):
+    def show_mean_width_heigth(self, preprocess):
         width = []
         height = []
 
-        for image in self.all_images:
-            h, w, d = np.shape(image)
+        for path in self.all_image_paths:
+            if preprocess is True:
+                h, w, d = self.load_and_preprocess_image(path).shape.as_list()
+            else:
+                image = Image.open(path)
+                h, w, d = np.shape(image)
             width.append(w)
             height.append(h)
 
