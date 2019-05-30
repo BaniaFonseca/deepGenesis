@@ -4,7 +4,6 @@ import random
 from dataset.exception import *
 
 class Dataset:
-
     def __init__(self, data_root=str, image_width=int, image_height=int):
         self.data_root = pathlib.Path(data_root)
         self.image_width = image_width
@@ -22,7 +21,6 @@ class Dataset:
         return self.preprocess_image(image)
 
     def build_dataset(self):
-
         try:
             if len(list(self.data_root.glob('*/*')))  is 0:
                 raise ImageNotFound
@@ -36,3 +34,5 @@ class Dataset:
             self.image_label_ds = tf.data.Dataset.zip((self.image_ds, self.labels_ds))
         except ImageNotFound:
             print('images not found at director: [{}]'.format(self.data_root.absolute()))
+
+
