@@ -49,20 +49,30 @@ class VisualizeDataset(Dataset):
         plt.plot(width, height, '.r', label='Width x Height')
         plt.show()
 
-    def show_images(self, augmentend_data_root):
-        columns, rows, size= 5, 4, 32
-        augmentend_data_root = pathlib.Path(augmentend_data_root)
-        datagen = ImageDataGenerator()
-        all_flip_image_paths = list(augmentend_data_root.glob('*/flip*'))
-        all_zoom_image_paths = list(augmentend_data_root.glob('*/zoom*'))
-        all_brightness_image_paths = list(augmentend_data_root.glob('*/brightness*'))
-        all_rotate_image_paths = list(augmentend_data_root.glob('*/rotate*'))
-        all_rescale_image_paths = list(augmentend_data_root.glob('*/rescale*'))
-        fig = plt.figure(figsize=(40, 40))
+    def show_images(self, processed_data_root):
+        columns, rows, size= 6, 3, 32
+        processed_data_root = pathlib.Path(processed_data_root)
+        all_original_image_paths =  list(processed_data_root.glob('*/origin*'))
+        all_flip_image_paths = list(processed_data_root.glob('*/flip*'))
+        all_zoom_image_paths = list(processed_data_root.glob('*/zoom*'))
+        all_brightness_image_paths = list(processed_data_root.glob('*/brightness*'))
+        all_rotate_image_paths = list(processed_data_root.glob('*/rotate*'))
+        all_rescale_image_paths = list(processed_data_root.glob('*/rescale*'))
+        fig = plt.figure(figsize=(50, 50))
         index = 0
         i = 0
+        all_zoom_image_paths.sort()
+        all_original_image_paths.sort()
+        all_brightness_image_paths.sort()
+        all_rotate_image_paths.sort()
+        all_flip_image_paths.sort()
+        all_rescale_image_paths.sort()
+
         while i <= columns*rows:
-            print(index)
+            img = load_img(all_original_image_paths[index])
+            i = i + 1
+            fig.add_subplot(rows, columns, i)
+            plt.imshow(img)
             img = load_img(all_flip_image_paths[index])
             i = i + 1
             fig.add_subplot(rows, columns, i)
@@ -86,6 +96,6 @@ class VisualizeDataset(Dataset):
 
             index = index+1
 
-            if index > 3:
+            if index > 2:
                 break
         plt.show()

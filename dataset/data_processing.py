@@ -1,8 +1,6 @@
-import numpy as np
 import random
 import cv2
 from keras.preprocessing.image import save_img, img_to_array, load_img, array_to_img
-from matplotlib import pyplot
 import pathlib
 from numpy import expand_dims
 from keras.preprocessing.image import ImageDataGenerator
@@ -27,10 +25,8 @@ class DataProcessing:
             self.processed_images = self.processed_images+1
             path = self.all_image_paths[i]
             img = load_img(path)
-            #data = img_to_array(img)
-           # img = cv2.imread('your_image.jpg')
-           # res = cv2.resize(img, (256, 256), interpolation=cv2.INTER_CUBIC)
-
+            data = img_to_array(img)
+            img = self.resize(data)
             filename = self.processed_data_root
             filename = filename.joinpath('test', pathlib.Path(path).parent.name,'original_' + str(i) + '.jpeg')
             save_img(str(filename), img)
@@ -42,25 +38,23 @@ class DataProcessing:
             path = self.all_image_paths[i]
             img = load_img(path)
             data = img_to_array(img)
+            img = self.resize(data)
             filename = self.processed_data_root
             filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
             save_img(str(filename), img)
             print(filename)
 
-        #self.rotate()
-       # self.flip_horizontal()
-       # self.brightness()
-       # self.rescale()
-       # self.zoom()
+        self.rotate()
+        self.flip_horizontal()
+        self.brightness()
+        self.rescale()
+        self.zoom()
 
-        print("{} was processed and saved sucessfuly at: {}".format(self.processed_images, self.processed_data_root))
+        print("{} images was processed and saved sucessfuly at: {}".format(self.processed_images, self.processed_data_root))
 
     def rescale(self):
-        count = 0
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
             path = self.all_image_paths[i]
-            if count > self.TRAIN_SIZE:
-                break
             self.processed_images = self.processed_images + 1
             img = load_img(path)
             data = img_to_array(img)
@@ -69,19 +63,16 @@ class DataProcessing:
             it = datagen.flow(samples, batch_size=1)
             batch = it.next()
             image = batch[0].astype('uint8')
+            image = self.resize(image)
             filename = self.processed_data_root
             filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'rescale_' + str(i) + '.jpeg')
             save_img(str(filename), image)
-            count = count + 1
             print(filename)
 
 
     def rotate(self):
-        count = 0
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
             path = self.all_image_paths[i]
-            if count > self.TRAIN_SIZE:
-                break
             self.processed_images = self.processed_images+1
             img = load_img(path)
             data = img_to_array(img)
@@ -90,38 +81,27 @@ class DataProcessing:
             it = datagen.flow(samples, batch_size=1)
             batch = it.next()
             image = batch[0].astype('uint8')
+            image = self.resize(image)
             filename = self.processed_data_root
             filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'rotate_' + str(i) + '.jpeg')
             save_img(str(filename), image)
-            count = count + 1
             print(filename)
 
     def flip_horizontal(self):
-        count = 0
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
             path = self.all_image_paths[i]
-            if count > self.TRAIN_SIZE:
-                break
             self.processed_images = self.processed_images + 1
-            img = load_img(path)
-            data = img_to_array(img)
-            datagen = ImageDataGenerator(horizontal_flip=True)
-            samples = expand_dims(data, 0)
-            it = datagen.flow(samples, batch_size=1)
-            batch = it.next()
-            image = batch[0].astype('uint8')
+            image = cv2.imread(path)
+            image = cv2.flip(image, 1)
+            image = self.resize(image)
             filename = self.processed_data_root
             filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'flip_' + str(i) + '.jpeg')
             save_img(str(filename), image)
-            count = count + 1
             print(filename)
 
     def brightness(self):
-        count = 0
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
             path = self.all_image_paths[i]
-            if count > self.TRAIN_SIZE:
-                break
             self.processed_images = self.processed_images+1
             img = load_img(path)
             data = img_to_array(img)
@@ -130,28 +110,29 @@ class DataProcessing:
             it = datagen.flow(samples, batch_size=1)
             batch = it.next()
             image = batch[0].astype('uint8')
+            image = self.resize(image)
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'flip_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'brightness_' + str(i) + '.jpeg')
             save_img(str(filename), image)
-            count = count + 1
             print(filename)
 
     def zoom(self):
-        count = 0
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
             path = self.all_image_paths[i]
-            if count > self.TRAIN_SIZE:
-                break
             self.processed_images = self.processed_images+1
             img = load_img(path)
             data = img_to_array(img)
-            datagen = ImageDataGenerator(zoom_range=[2, 2])
+            datagen = ImageDataGenerator(zoom_range=[1.5, 1.6])
             samples = expand_dims(data, 0)
             it = datagen.flow(samples, batch_size=1)
             batch = it.next()
             image = batch[0].astype('uint8')
+            image = self.resize(image)
+
             filename = self.processed_data_root
             filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'zoom_' + str(i) + '.jpeg')
             save_img(str(filename), image)
-            count = count + 1
             print(filename)
+
+    def resize(self, img):
+        return cv2.resize(img, (self.HEIGHT, self.WIDTH), interpolation=cv2.INTER_AREA)
