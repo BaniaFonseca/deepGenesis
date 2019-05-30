@@ -65,8 +65,6 @@ class VisualizeDataset:
                     plt.subplot(3, 6, n + 1)
                     plt.imshow(image[0])
                     plt.title(image[1])
-                    plt.xticks([])
-                    plt.yticks([])
                 plt.show()
                 session.close()
             finally:

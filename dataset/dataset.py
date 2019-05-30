@@ -15,7 +15,7 @@ class Dataset:
                 raise ImageNotFound
 
             all_image_paths = [str(path) for path in list(path.glob('*/*'))]
-            random.shuffle(all_image_paths, random.seed(7 * (len(all_image_paths))))
+            random.shuffle(all_image_paths, random.seed())
             label_names = sorted(item.name for item in path.glob('*/') if item.is_dir())
             label_to_index = dict((name, index) for index, name in enumerate(label_names))
             all_image_labes = [label_to_index[pathlib.Path(path).parent.name] for path in all_image_paths]
