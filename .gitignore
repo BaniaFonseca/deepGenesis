@@ -1,3 +1,5 @@
+*.jpeg
+*.jpg
 *.pyc
 *.lock
 __pycache__

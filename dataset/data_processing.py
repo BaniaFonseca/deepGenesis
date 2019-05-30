@@ -1,11 +1,13 @@
 import random
 import cv2
-from keras.preprocessing.image import save_img, img_to_array, load_img, array_to_img
 import pathlib
 from numpy import expand_dims
 from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import save_img, img_to_array
+from keras.preprocessing.image import  load_img
 
 class DataProcessing:
+
     def __init__(self, preprocessed_data_root, processed_data_root):
         self.preprocessed_data_root = pathlib.Path(preprocessed_data_root)
         self.DATASET_SIZE = len(list(self.preprocessed_data_root.glob('*/*')))
@@ -14,13 +16,13 @@ class DataProcessing:
         self.HEIGHT = 256
         self.WIDTH = 256
         self.processed_data_root = pathlib.Path(processed_data_root)
-        self.all_image_paths =[str(path) for path in list(self.preprocessed_data_root.glob('*/*'))]
+        self.all_image_paths = \
+            [str(path) for path in list(self.preprocessed_data_root.glob('*/*'))]
+        random.shuffle(self.all_image_paths)
         self.processed_images = 0
         self.save_processed_data()
 
     def save_processed_data(self):
-        random.shuffle(self.all_image_paths)
-        #save test samples
         for i in range(self.TEST_SIZE):
             self.processed_images = self.processed_images+1
             path = self.all_image_paths[i]
@@ -32,7 +34,6 @@ class DataProcessing:
             save_img(str(filename), img)
             print(filename)
 
-        # save train samples
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
             self.processed_images = self.processed_images+1
             path = self.all_image_paths[i]
@@ -50,7 +51,8 @@ class DataProcessing:
         self.rescale()
         self.zoom()
 
-        print("{} images was processed and saved sucessfuly at: {}".format(self.processed_images, self.processed_data_root))
+        print("{} images was processed and saved sucessfuly at: {}"\
+              .format(self.processed_images, self.processed_data_root))
 
     def rescale(self):
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
