@@ -30,7 +30,8 @@ class DataProcessing:
             data = img_to_array(img)
             img = self.resize(data)
             filename = self.processed_data_root
-            filename = filename.joinpath('test', pathlib.Path(path).parent.name,'original_' + str(i) + '.jpeg')
+            filename = filename.joinpath('test',
+                pathlib.Path(path).parent.name,'original_' + str(i) + '.jpeg')
             save_img(str(filename), img)
             print(filename)
 
@@ -41,7 +42,8 @@ class DataProcessing:
             data = img_to_array(img)
             img = self.resize(data)
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train',
+                pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
             save_img(str(filename), img)
             print(filename)
 
@@ -51,7 +53,7 @@ class DataProcessing:
         self.rescale()
         self.zoom()
 
-        print("{} images was processed and saved sucessfuly at: {}"\
+        print("{} images was processed and saved sucessfuly at: {}"
               .format(self.processed_images, self.processed_data_root))
 
     def rescale(self):
@@ -67,10 +69,10 @@ class DataProcessing:
             image = batch[0].astype('uint8')
             image = self.resize(image)
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'rescale_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train',
+                pathlib.Path(path).parent.name, 'rescale_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
-
 
     def rotate(self):
         for i in range(self.TEST_SIZE, self.DATASET_SIZE):
@@ -85,7 +87,8 @@ class DataProcessing:
             image = batch[0].astype('uint8')
             image = self.resize(image)
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'rotate_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train',
+                pathlib.Path(path).parent.name, 'rotate_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
@@ -97,7 +100,8 @@ class DataProcessing:
             image = cv2.flip(image, 1)
             image = self.resize(image)
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'flip_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train',
+                pathlib.Path(path).parent.name, 'flip_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
@@ -114,7 +118,8 @@ class DataProcessing:
             image = batch[0].astype('uint8')
             image = self.resize(image)
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'brightness_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train',
+                pathlib.Path(path).parent.name, 'brightness_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
@@ -130,9 +135,9 @@ class DataProcessing:
             batch = it.next()
             image = batch[0].astype('uint8')
             image = self.resize(image)
-
             filename = self.processed_data_root
-            filename = filename.joinpath('train', pathlib.Path(path).parent.name, 'zoom_' + str(i) + '.jpeg')
+            filename = filename.joinpath('train',
+                pathlib.Path(path).parent.name, 'zoom_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
