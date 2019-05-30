@@ -1,10 +1,5 @@
-preprocessed_data/empty/*
-preprocessed_data/full/*
-processed_data/test/empty/*
-processed_data/test/full/*
-processed_data/train/empty/*
-processed_data/train/full/*
-
+*.jpg
+*.jpeg
 *.pyc
 *.lock
 __pycache__
