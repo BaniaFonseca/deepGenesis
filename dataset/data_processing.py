@@ -1,3 +1,5 @@
+from config import *
+from dataset.exception import *
 import random
 import cv2
 import pathlib
@@ -8,42 +10,43 @@ from keras.preprocessing.image import  load_img
 
 class DataProcessing:
 
-    def __init__(self, preprocessed_data_root, processed_data_root):
-        self.preprocessed_data_root = pathlib.Path(preprocessed_data_root)
-        self.DATASET_SIZE = len(list(self.preprocessed_data_root.glob('*/*')))
-        self.TRAIN_SIZE = int(0.7 * self.DATASET_SIZE)
-        self.TEST_SIZE = int(0.3 * self.DATASET_SIZE)
-        self.HEIGHT = 256
-        self.WIDTH = 256
-        self.processed_data_root = pathlib.Path(processed_data_root)
-        self.all_image_paths = \
-            [str(path) for path in list(self.preprocessed_data_root.glob('*/*'))]
-        random.shuffle(self.all_image_paths)
-        self.processed_images = 0
-        self.save_processed_data()
+    def __init__(self):
+        try:
+            path = ALL_DATA
+            if len(list(path.glob('*/*'))) is 0:
+                raise ImageNotFound
 
-    def save_processed_data(self):
-        for i in range(self.TEST_SIZE):
+            self.all_image_paths = \
+                [str(path) for path in list(ALL_DATA.glob('*/*'))]
+            random.shuffle(self.all_image_paths)
+            self.processed_images = 0
+            self.creat_folders()
+
+        except ImageNotFound:
+            print('images not found at director: [{}]'.format(ALL_DATA.absolute()))
+
+    def process_data(self):
+        for i in range(TEST_SIZE):
             self.processed_images = self.processed_images+1
             path = self.all_image_paths[i]
             img = load_img(path)
             data = img_to_array(img)
             img = self.resize(data)
-            filename = self.processed_data_root
-            filename = filename.joinpath('test',
-                pathlib.Path(path).parent.name,'original_' + str(i) + '.jpeg')
+            filename = TEST_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name,'original_' + str(i) + '.jpeg')
             save_img(str(filename), img)
             print(filename)
 
-        for i in range(self.TEST_SIZE, self.DATASET_SIZE):
+        for i in range(TEST_SIZE, DATASET_SIZE):
             self.processed_images = self.processed_images+1
             path = self.all_image_paths[i]
             img = load_img(path)
             data = img_to_array(img)
             img = self.resize(data)
-            filename = self.processed_data_root
-            filename = filename.joinpath('train',
-                pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
+            filename = TRAIN_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
             save_img(str(filename), img)
             print(filename)
 
@@ -53,11 +56,11 @@ class DataProcessing:
         self.rescale()
         self.zoom()
 
-        print("{} images was processed and saved sucessfuly at: {}"
-              .format(self.processed_images, self.processed_data_root))
+        print("{} images was processed and saved sucessfuly"
+              .format(self.processed_images))
 
     def rescale(self):
-        for i in range(self.TEST_SIZE, self.DATASET_SIZE):
+        for i in range(TEST_SIZE, DATASET_SIZE):
             path = self.all_image_paths[i]
             self.processed_images = self.processed_images + 1
             img = load_img(path)
@@ -68,14 +71,14 @@ class DataProcessing:
             batch = it.next()
             image = batch[0].astype('uint8')
             image = self.resize(image)
-            filename = self.processed_data_root
-            filename = filename.joinpath('train',
-                pathlib.Path(path).parent.name, 'rescale_' + str(i) + '.jpeg')
+            filename = TRAIN_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'rescale_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
     def rotate(self):
-        for i in range(self.TEST_SIZE, self.DATASET_SIZE):
+        for i in range(TEST_SIZE, DATASET_SIZE):
             path = self.all_image_paths[i]
             self.processed_images = self.processed_images+1
             img = load_img(path)
@@ -86,27 +89,27 @@ class DataProcessing:
             batch = it.next()
             image = batch[0].astype('uint8')
             image = self.resize(image)
-            filename = self.processed_data_root
-            filename = filename.joinpath('train',
-                pathlib.Path(path).parent.name, 'rotate_' + str(i) + '.jpeg')
+            filename = TRAIN_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'rotate_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
     def flip_horizontal(self):
-        for i in range(self.TEST_SIZE, self.DATASET_SIZE):
+        for i in range(TEST_SIZE, DATASET_SIZE):
             path = self.all_image_paths[i]
             self.processed_images = self.processed_images + 1
             image = cv2.imread(path)
             image = cv2.flip(image, 1)
             image = self.resize(image)
-            filename = self.processed_data_root
-            filename = filename.joinpath('train',
-                pathlib.Path(path).parent.name, 'flip_' + str(i) + '.jpeg')
+            filename = TRAIN_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'flip_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
     def brightness(self):
-        for i in range(self.TEST_SIZE, self.DATASET_SIZE):
+        for i in range(TEST_SIZE, DATASET_SIZE):
             path = self.all_image_paths[i]
             self.processed_images = self.processed_images+1
             img = load_img(path)
@@ -117,14 +120,14 @@ class DataProcessing:
             batch = it.next()
             image = batch[0].astype('uint8')
             image = self.resize(image)
-            filename = self.processed_data_root
-            filename = filename.joinpath('train',
-                pathlib.Path(path).parent.name, 'brightness_' + str(i) + '.jpeg')
+            filename = TRAIN_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'brightness_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
     def zoom(self):
-        for i in range(self.TEST_SIZE, self.DATASET_SIZE):
+        for i in range(TEST_SIZE, DATASET_SIZE):
             path = self.all_image_paths[i]
             self.processed_images = self.processed_images+1
             img = load_img(path)
@@ -135,11 +138,24 @@ class DataProcessing:
             batch = it.next()
             image = batch[0].astype('uint8')
             image = self.resize(image)
-            filename = self.processed_data_root
-            filename = filename.joinpath('train',
-                pathlib.Path(path).parent.name, 'zoom_' + str(i) + '.jpeg')
+            filename = TRAIN_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'zoom_' + str(i) + '.jpeg')
             save_img(str(filename), image)
             print(filename)
 
     def resize(self, img):
-        return cv2.resize(img, (self.HEIGHT, self.WIDTH), interpolation=cv2.INTER_AREA)
+        return cv2.resize(img, (HEIGHT, WIDTH), interpolation=cv2.INTER_AREA)
+
+    def creat_folders(self):
+        for dir_name in ALL_DATA.glob('*/'):
+            path = TEST_DATA
+            path = path.joinpath(dir_name.name)
+            if not pathlib.Path(path).exists():
+                pathlib.Path(path).mkdir()
+
+        for dir_name in ALL_DATA.glob('*/'):
+            path = TRAIN_DATA
+            path = path.joinpath(dir_name.name)
+            if not pathlib.Path(path).exists():
+                pathlib.Path(path).mkdir()

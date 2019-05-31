@@ -52,7 +52,7 @@ class VisualizeDataset:
         plt.plot(width, height, '.r', label='Width x Height')
         plt.show()
 
-    def show_images(self, dataset):
+    def show_images(self, dataset, cols=6, rows=3):
         # create a one-shot iterator
         iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
         # extract an element
@@ -60,9 +60,9 @@ class VisualizeDataset:
         with tf.compat.v1.Session() as session:
             plt.figure(figsize=(32, 32))
             try:
-                for n in range(3*6):
+                for n in range(cols*rows):
                     image = session.run(next_element)
-                    plt.subplot(3, 6, n + 1)
+                    plt.subplot(rows, cols, n + 1)
                     plt.imshow(image[0])
                     plt.title(image[1])
                 plt.show()
