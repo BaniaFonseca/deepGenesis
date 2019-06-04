@@ -1,12 +1,17 @@
 import pathlib
-import tensorflow as tf
+
 DATA_ROOT = pathlib.Path('data_root')
 ALL_DATA = pathlib.Path('data_root/all_data')
 TEST_DATA = pathlib.Path('data_root/test_data')
 TRAIN_DATA = pathlib.Path('data_root/train_data')
+YOLO_DIR = pathlib.Path('model/yolo')
+YOLO_DIR_RES = pathlib.Path('model/yolo/resource')
 
 if not DATA_ROOT.exists():
     DATA_ROOT.mkdir()
+
+if not YOLO_DIR_RES.exists():
+    YOLO_DIR_RES.mkdir()
 
 if not ALL_DATA.exists():
     ALL_DATA.mkdir()
@@ -20,6 +25,9 @@ if not TRAIN_DATA.exists():
 DATASET_SIZE = len(list(ALL_DATA.glob('*/*')))
 TRAIN_SIZE = int(0.7 * DATASET_SIZE)
 TEST_SIZE = int(0.3 * DATASET_SIZE)
-HEIGHT = 256
-WIDTH = 256
+HEIGHT = 416
+WIDTH = 416
+CHANELS = 3
 CLASS_NUMBER = len(list(item.name for item in ALL_DATA.glob('*/') if item.is_dir()))
+LABEL_NAMES = [item.name for item in ALL_DATA.glob('*/') if item.is_dir()]
+LABEL_NAMES.sort()

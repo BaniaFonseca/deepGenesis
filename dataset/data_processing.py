@@ -7,7 +7,7 @@ from numpy import expand_dims
 from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing.image import save_img, img_to_array
 from keras.preprocessing.image import  load_img
-
+import shutil
 class DataProcessing:
 
     def __init__(self):
@@ -16,16 +16,16 @@ class DataProcessing:
             if len(list(path.glob('*/*'))) is 0:
                 raise ImageNotFound
 
-            self.all_image_paths = \
-                [str(path) for path in list(ALL_DATA.glob('*/*'))]
-            random.shuffle(self.all_image_paths)
-            self.processed_images = 0
-            self.creat_folders()
-
         except ImageNotFound:
             print('images not found at director: [{}]'.format(ALL_DATA.absolute()))
 
     def process_data(self):
+        self.all_image_paths = \
+            [str(path) for path in list(ALL_DATA.glob('*/*'))]
+        random.shuffle(self.all_image_paths)
+        self.processed_images = 0
+        self.creat_folders()
+
         for i in range(TEST_SIZE):
             self.processed_images = self.processed_images+1
             path = self.all_image_paths[i]
@@ -151,11 +151,17 @@ class DataProcessing:
         for dir_name in ALL_DATA.glob('*/'):
             path = TEST_DATA
             path = path.joinpath(dir_name.name)
-            if not pathlib.Path(path).exists():
+            if pathlib.Path(path).exists():
+                shutil.rmtree (path)
+                pathlib.Path(path).mkdir()
+            else:
                 pathlib.Path(path).mkdir()
 
         for dir_name in ALL_DATA.glob('*/'):
             path = TRAIN_DATA
             path = path.joinpath(dir_name.name)
-            if not pathlib.Path(path).exists():
+            if pathlib.Path(path).exists():
+                shutil.rmtree(path)
+                pathlib.Path(path).mkdir()
+            else:
                 pathlib.Path(path).mkdir()

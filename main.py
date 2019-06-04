@@ -4,13 +4,23 @@ from dataset.data_processing import  DataProcessing
 from dataset.dataset import Dataset
 from util.visualize_dataset import VisualizeDataset
 import tensorflow as tf
+from train.yolo.yolo import  TYolo
+
+ty = TYolo()
+
+#ty.train()
 
 vs = VisualizeDataset()
 
-ds = Dataset()
+#ds = Dataset()
 
-#trainset = ds.get_trainset()
-#vs.show_images(dataset=trainset, cols=6, rows=3)
+#images, labels = ds.get_trainset()
+
+#print(train_images.dtype)
+
+#print('training:{}'.format(isTrainig(mode)))
+
+#vs.show_images(images=images, labels=labels, cols=6, rows=10)
 
 #testset = ds.get_testset()
 #vs.show_images(dataset=testset, cols=1, rows=1)
