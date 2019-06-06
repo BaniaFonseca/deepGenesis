@@ -18,6 +18,7 @@ class Dataset:
             if len(list(path.glob('*/*'))) is 0:
                 raise ImageNotFound
 
+            path = path.joinpath()
             test_dataset = self.generate_dataset(path)
             iterator = tf.compat.v1.data.make_one_shot_iterator(test_dataset)
             next_element = iterator.get_next()
@@ -43,14 +44,14 @@ class Dataset:
         except ImageNotFound:
             print('images not found at director: [{}]'.format(TEST_DATA.absolute()))
 
-    def get_trainset(self):
+    def get_trainset(self, name='*'):
         try:
             path = TRAIN_DATA
-            size = len(list(path.glob('*/*')))
-            if len(list(path.glob('*/*'))) is 0:
+            size = len(list(path.glob('*/'+name)))
+            if len(list(path.glob('*/'+name))) is 0:
                 raise ImageNotFound
 
-            train_dataset = self.generate_dataset(path)
+            train_dataset = self.generate_dataset(path, name)
             iterator = tf.compat.v1.data.make_one_shot_iterator(train_dataset)
             next_element = iterator.get_next()
             images = []
@@ -75,8 +76,8 @@ class Dataset:
         except ImageNotFound:
             print('images not found at director: [{}]'.format(TRAIN_DATA.absolute()))
 
-    def generate_dataset(self, path):
-        all_image_paths = [str(path) for path in list(path.glob('*/*'))]
+    def generate_dataset(self, path, name='*'):
+        all_image_paths = [str(path) for path in list(path.glob('*/'+name))]
         random.shuffle(all_image_paths)
         label_to_index = dict((name, index) for index, name in enumerate(LABEL_NAMES))
         labels = \

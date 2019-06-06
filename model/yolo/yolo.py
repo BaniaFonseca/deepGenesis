@@ -18,7 +18,7 @@ class Yolo():
 
     def model(self):
         X_input = keras.layers.Input((HEIGHT, WIDTH, CHANELS))
-        X =  keras.layers.ZeroPadding2D((0, 0))(X_input)
+        X =  X_input
 
         X = self.darknet53(X)
         X = self.yolo_convolution_block(X, filters=512)
@@ -29,7 +29,7 @@ class Yolo():
         X = Dense(CLASS_NUMBER, activation='softmax',
                        kernel_initializer='glorot_uniform')(X)
 
-        model = Model(inputs=X_input, outputs=X, name='Yolo')
+        model = Model(inputs=X_input, outputs=X, name='Yolo_v3')
         return model
 
     def batch_norm(self, inputs):

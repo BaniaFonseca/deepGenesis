@@ -2,6 +2,8 @@
 *.jpg
 *.png
 *.npy
+*.h5
+*.json
 *.pyc
 *.lock
 __pycache__
