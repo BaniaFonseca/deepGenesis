@@ -78,8 +78,8 @@ class DataProcessing:
             print(filename)
 
         # self.rotate()
-        # self.flip_horizontal()
-#        self.brightness()
+        self.flip_horizontal()
+        self.brightness()
         self.rescale()
         # self.zoom()
 

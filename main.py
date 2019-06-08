@@ -4,16 +4,22 @@ from dataset.data_processing import  DataProcessing
 from dataset.dataset import Dataset
 from util.visualize_dataset import VisualizeDataset
 import tensorflow as tf
-from train.yolo.yolo import TYolo
-from train.retinanet.retinanet import TRetinaNet
+from train.darknet.darknet import TDarknet
+from train.resnet34.resnet34 import TResNet34
+from train.resnet50.resnet50 import TResNet50
 
 
-ty = TYolo()
-tr = TRetinaNet()
+td = TDarknet()
+tr34 = TResNet34()
+tr50 = TResNet50()
 
-#tr.train()
-#ty.train()
-ty.test()
+#tr34.train()
+#tr34.test()
+td.train()
+td.test()
+
+#tr50.train()
+#tr50.test()
 
 dp = DataProcessing()
 #dp.process_data()

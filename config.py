@@ -4,17 +4,15 @@ DATA_ROOT = pathlib.Path('data_root')
 ALL_DATA = pathlib.Path('data_root/all_data')
 TEST_DATA = pathlib.Path('data_root/test_data')
 TRAIN_DATA = pathlib.Path('data_root/train_data')
-YOLO_DIR = pathlib.Path('model/yolo')
-YOLO_DIR_RES = pathlib.Path('model/yolo/resource')
-
-RETINANET_DIR = pathlib.Path('model/retinanet')
-RETINANET_DIR_RES = pathlib.Path('model/retinanet/resource')
+DARKNET_DIR = pathlib.Path('model/darknet')
+DARKNET_DIR_RES = pathlib.Path('model/darknet/resource')
+RESNET34_DIR = pathlib.Path('model/resnet34')
+RESNET34_DIR_RES = pathlib.Path('model/resnet34/resource')
+RESNET50_DIR = pathlib.Path('model/resnet50')
+RESNET50_DIR_RES = pathlib.Path('model/resnet50/resource')
 
 if not DATA_ROOT.exists():
     DATA_ROOT.mkdir()
-
-if not YOLO_DIR_RES.exists():
-    YOLO_DIR_RES.mkdir()
 
 if not ALL_DATA.exists():
     ALL_DATA.mkdir()
