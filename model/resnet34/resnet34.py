@@ -42,35 +42,35 @@ class ResNet34():
         inputs = self.conv_II(inputs)
 
         inputs = Conv2D(filters=128, kernel_size=3, strides=2, padding='VALID',
-                        name='conv_II_POLL',
-                        kernel_initializer='glorot_uniform', use_bias=False)(inputs)
+                        kernel_initializer='glorot_uniform',
+                        use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_III(inputs)
 
         inputs = Conv2D(filters=256, kernel_size=3, strides=2, padding='VALID',
-                        name='conv_III_POLL',
-                        kernel_initializer='glorot_uniform', use_bias=False)(inputs)
+                        kernel_initializer='glorot_uniform',
+                        use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_IV(inputs)
 
         inputs = Conv2D(filters=512, kernel_size=3, strides=2, padding='VALID',
-                        name='conv_IV_POLL',
-                        kernel_initializer='glorot_uniform', use_bias=False)(inputs)
-
+                        kernel_initializer='glorot_uniform',
+                        use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
-
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+
         inputs = self.conv_V(inputs)
 
         inputs = Conv2D(filters=1024, kernel_size=3, strides=2, padding='VALID',
-                        name='conv_V_POLL',
-                        kernel_initializer='glorot_uniform', use_bias=False)(inputs)
+                        kernel_initializer='glorot_uniform',
+                        use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+
         return inputs
 
     def conv_II(self, inputs):
@@ -119,6 +119,7 @@ class ResNet34():
             inputs = Conv2D(filters=256, kernel_size=3, strides=1, padding='SAME',
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
+
             inputs = keras.layers.Add()([inputs, shortcut])
             inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs
@@ -135,6 +136,7 @@ class ResNet34():
             inputs = Conv2D(filters=512, kernel_size=3, strides=1, padding='SAME',
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
+
             inputs = keras.layers.Add()([inputs, shortcut])
             inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs

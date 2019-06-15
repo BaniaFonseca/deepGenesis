@@ -21,9 +21,11 @@ class ResNet50():
         X = X_input
         X = self.resnet_50(X)
         X = Flatten(name='FC') (X)
+
         X = Dense(CLASS_NUMBER, activation='softmax',
-                  kernel_initializer='glorot_uniform')(X)
-        model = Model(inputs=X_input, outputs=X, name='RetinaNet')
+                   kernel_initializer='glorot_uniform')(X)
+
+        model = Model(inputs=X_input, outputs=X, name='ResNet50')
         return model
 
     def resnet_50(self, inputs):
@@ -36,7 +38,7 @@ class ResNet50():
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
-        inputs = Conv2D(filters=256, kernel_size=1, strides=1, padding='SAME',
+        inputs = Conv2D(filters=256, kernel_size=3, strides=2, padding='VALID',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
@@ -67,12 +69,6 @@ class ResNet50():
 
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
         inputs = self.conv_V(inputs)
-
-        inputs = Conv2D(filters=2024, kernel_size=3, strides=2, padding='VALID',
-                        name='conv_V_POLL',
-                        kernel_initializer='glorot_uniform', use_bias=False)(inputs)
-        inputs = self.batch_norm(inputs)
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
         return inputs
 
     def conv_II(self, inputs):
@@ -137,6 +133,7 @@ class ResNet50():
             inputs = Conv2D(filters=1024, kernel_size=1, strides=1, padding='SAME',
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
+
             inputs = keras.layers.Add()([inputs, shortcut])
             inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs
@@ -158,6 +155,7 @@ class ResNet50():
             inputs = Conv2D(filters=2048, kernel_size=1, strides=1, padding='SAME',
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
+
             inputs = keras.layers.Add()([inputs, shortcut])
             inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs

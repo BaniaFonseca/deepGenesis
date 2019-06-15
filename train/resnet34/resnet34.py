@@ -18,10 +18,10 @@ class TResNet34(ResNet34):
         ds = Dataset()
         train_images, train_labels = ds.get_trainset()
         #train_labels = to_categorical(train_labels)
-        test_images, test_labels = ds.get_testset()
+        validation_images, validation_labels = ds.get_validationset()
         #test_labels = to_categorical(test_labels)
 
-        mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath('model.h5')), monitor='val_acc',
+        mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath('model.h5')), monitor='val_loss',
                              mode='auto', verbose=1, save_best_only=True)
 
         model = self.model()
@@ -41,15 +41,17 @@ class TResNet34(ResNet34):
         # if a:
         #     return None
 
-        history = model.fit(train_images, train_labels, epochs=40,
-                  validation_data=(test_images, test_labels), callbacks=[mc])
+        history = model.fit(train_images, train_labels, epochs=20, shuffle=False,
+                  validation_data=(validation_images, validation_labels), callbacks=[mc])
+
+        self.test()
 
         plt.plot(history.history['acc'])
         plt.plot(history.history['val_acc'])
         plt.title('Model accuracy')
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.legend(['Train', 'Validation'], loc='upper left')
         plt.show()
 
         # Plot training & validation loss values
@@ -58,7 +60,7 @@ class TResNet34(ResNet34):
         plt.title('Model loss')
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.legend(['Train', 'Validation'], loc='upper left')
         plt.show()
 
 

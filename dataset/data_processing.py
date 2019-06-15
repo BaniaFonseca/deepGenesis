@@ -25,8 +25,8 @@ class DataProcessing:
         self.all_full_image_paths = \
             [str(path) for path in list(ALL_DATA.glob('full/*'))]
 
-        random.shuffle(self.all_empty_image_paths)
-        random.shuffle(self.all_full_image_paths)
+        random.shuffle(self.all_empty_image_paths, random.seed())
+        random.shuffle(self.all_full_image_paths, random.seed())
 
         self.processed_images = 0
         self.creat_folders()
@@ -54,7 +54,30 @@ class DataProcessing:
             save_img(str(filename), img)
             print(filename)
 
-        for i in range(TEST_SIZE, DATASET_SIZE):
+        for i in range(TEST_SIZE, TEST_SIZE + VALIDATION_SIZE):
+            self.processed_images = self.processed_images + 2
+
+            path = self.all_empty_image_paths[i]
+            img = load_img(path)
+            data = img_to_array(img)
+            img = self.resize(data)
+            filename = VALIDATION_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
+            save_img(str(filename), img)
+            print(filename)
+
+            path = self.all_full_image_paths[i]
+            img = load_img(path)
+            data = img_to_array(img)
+            img = self.resize(data)
+            filename = VALIDATION_DATA
+            filename = \
+                filename.joinpath(pathlib.Path(path).parent.name, 'original_' + str(i) + '.jpeg')
+            save_img(str(filename), img)
+            print(filename)
+
+        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
             self.processed_images = self.processed_images+2
 
             path = self.all_empty_image_paths[i]
@@ -77,17 +100,14 @@ class DataProcessing:
             save_img(str(filename), img)
             print(filename)
 
-        # self.rotate()
         self.flip_horizontal()
-        self.brightness()
         self.rescale()
-        # self.zoom()
 
         print("{} images was processed and saved sucessfuly"
               .format(self.processed_images))
 
     def rescale(self):
-        for i in range(TEST_SIZE, DATASET_SIZE):
+        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
             path = self.all_empty_image_paths[i]
             self.processed_images = self.processed_images + 1
             img = load_img(path)
@@ -120,7 +140,7 @@ class DataProcessing:
             print(filename)
 
     def rotate(self):
-        for i in range(TEST_SIZE, DATASET_SIZE):
+        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
             path = self.all_empty_image_paths[i]
             self.processed_images = self.processed_images+2
             img = load_img(path)
@@ -153,7 +173,7 @@ class DataProcessing:
             print(filename)
 
     def flip_horizontal(self):
-        for i in range(TEST_SIZE, DATASET_SIZE):
+        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
             self.processed_images = self.processed_images + CLASS_NUMBER
 
             path = self.all_empty_image_paths[i]
@@ -177,7 +197,7 @@ class DataProcessing:
             print(filename)
 
     def brightness(self):
-        for i in range(TEST_SIZE, DATASET_SIZE):
+        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
             self.processed_images = self.processed_images + CLASS_NUMBER
 
             path = self.all_empty_image_paths[i]
@@ -211,7 +231,7 @@ class DataProcessing:
             print(filename)
 
     def zoom(self):
-        for i in range(TEST_SIZE, DATASET_SIZE):
+        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
             self.processed_images = self.processed_images + CLASS_NUMBER
 
             path = self.all_empty_image_paths[i]
@@ -259,6 +279,14 @@ class DataProcessing:
 
         for dir_name in ALL_DATA.glob('*/'):
             path = TRAIN_DATA
+            path = path.joinpath(dir_name.name)
+            if pathlib.Path(path).exists():
+                shutil.rmtree(path)
+                pathlib.Path(path).mkdir()
+            else:
+                pathlib.Path(path).mkdir()
+        for dir_name in ALL_DATA.glob('*/'):
+            path = VALIDATION_DATA
             path = path.joinpath(dir_name.name)
             if pathlib.Path(path).exists():
                 shutil.rmtree(path)

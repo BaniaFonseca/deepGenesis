@@ -1,6 +1,6 @@
 from config import *
 from keras.models import Model
-from keras.layers import Dense, Conv2D, Flatten, ZeroPadding2D, BatchNormalization, Flatten
+from keras.layers import Dense, Conv2D, Flatten, ZeroPadding2D, BatchNormalization, Flatten, MaxPooling2D
 import keras.initializers
 import keras.backend as K
 import tensorflow as tf
@@ -33,13 +33,13 @@ class DarkNet():
 
     def darknet53(self, inputs):
         inputs = Conv2D(filters=32, kernel_size=3, strides=1, padding='VALID',
-                        name='CONV_OI', kernel_initializer='glorot_uniform',
+                        kernel_initializer='glorot_uniform',
                         use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = Conv2D(filters=64, kernel_size=3, strides=2, padding='VALID',
-                        name='CONV_OII', kernel_initializer='glorot_uniform',
+                        kernel_initializer='glorot_uniform',
                         use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
@@ -73,6 +73,12 @@ class DarkNet():
         inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_V(inputs)
+
+        inputs = Conv2D(filters=2024, kernel_size=3, strides=2, padding='VALID',
+                        kernel_initializer='glorot_uniform', use_bias=False)(inputs)
+        inputs = self.batch_norm(inputs)
+        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+
         return inputs
 
     def conv_I(self, inputs):

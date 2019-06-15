@@ -12,13 +12,44 @@ class Dataset:
     def __init__(self):
         pass
 
+    def get_validationset(self):
+        try:
+            path = VALIDATION_DATA
+            if len(list(path.glob('*/*'))) is 0:
+                raise ImageNotFound
+
+            path = path.joinpath()
+            validation_dataset = self.generate_dataset(path)
+            iterator = tf.compat.v1.data.make_one_shot_iterator(validation_dataset)
+            next_element = iterator.get_next()
+            images = []
+            labels = []
+
+            with tf.compat.v1.Session() as session:
+                for n in range(len(list(path.glob('*/*')))):
+                    try:
+                        image, label = session.run(next_element)
+                        images.append(image)
+                        labels.append(label)
+                    except tf.errors.OutOfRangeError:
+                        break
+
+                np.save(str(VALIDATION_DATA) + '_images', images)
+                np.save(str(VALIDATION_DATA) + '_labels', labels)
+
+                images = np.load(str(VALIDATION_DATA) + '_images.npy', allow_pickle=True)
+                labels = np.load(str(VALIDATION_DATA) + '_labels.npy', allow_pickle=True)
+
+            return images, labels
+        except ImageNotFound:
+            print('images not found at director: [{}]'.format(TEST_DATA.absolute()))
+
     def get_testset(self):
         try:
             path = TEST_DATA
             if len(list(path.glob('*/*'))) is 0:
                 raise ImageNotFound
 
-            path = path.joinpath()
             test_dataset = self.generate_dataset(path)
             iterator = tf.compat.v1.data.make_one_shot_iterator(test_dataset)
             next_element = iterator.get_next()
@@ -79,6 +110,7 @@ class Dataset:
     def generate_dataset(self, path, name='*'):
         all_image_paths = [str(path) for path in list(path.glob('*/'+name))]
         random.shuffle(all_image_paths)
+
         label_to_index = dict((name, index) for index, name in enumerate(LABEL_NAMES))
         labels = \
             [label_to_index[pathlib.Path(path).parent.name] for path in all_image_paths]

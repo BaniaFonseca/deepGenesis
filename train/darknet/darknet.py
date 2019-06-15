@@ -7,7 +7,7 @@ from keras.utils import to_categorical
 from keras.utils import plot_model
 import tensorflow as tf
 from keras.callbacks import *
-from keras import optimizers
+from keras.optimizers import SGD
 from keras.models import model_from_json
 
 class TDarknet(DarkNet):
@@ -18,11 +18,12 @@ class TDarknet(DarkNet):
     def train(self):
         ds = Dataset()
         train_images, train_labels = ds.get_trainset()
-        test_images, test_labels = ds.get_testset()
+        validation_images, validation_labels = ds.get_validationset()
 
-        mc = ModelCheckpoint(str(DARKNET_DIR_RES.joinpath('model.h5')), monitor='val_acc',
+        mc = ModelCheckpoint(str(DARKNET_DIR_RES.joinpath('model.h5')), monitor='val_loss',
                               mode='auto', verbose=1, save_best_only=True)
         model = self.model()
+
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy',
                       metrics=['accuracy'])
         model.summary()
@@ -37,10 +38,10 @@ class TDarknet(DarkNet):
         # if a:
         #     return None
 
-        history = model.fit(train_images, train_labels, epochs=40,
-                  validation_data=(test_images, test_labels), callbacks=[mc])
+        history = model.fit(train_images,train_labels, epochs=80,shuffle=False,
+                  validation_data=(validation_images, validation_labels), callbacks=[mc])
         #callbacks=[es, mc]
-
+        self.test()
 
         #[3xrescale#1, 2xzoom#0, 3xbrightness#1, 3Xflip_horizontal-1, 1xrotate]
         #augmentation = '[zoom]'
@@ -50,7 +51,7 @@ class TDarknet(DarkNet):
         plt.title('Model accuracy')
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.legend(['Train', 'Validation'], loc='upper left')
         plt.show()
 
         # Plot training & validation loss values
@@ -59,7 +60,7 @@ class TDarknet(DarkNet):
         plt.title('Model loss:')
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.legend(['Train', 'Validation'], loc='upper left')
         plt.show()
 
     def test(self):
