@@ -8,6 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.preprocessing.image import save_img, img_to_array
 from keras.preprocessing.image import  load_img
 import shutil
+
 class DataProcessing:
 
     def __init__(self):
@@ -102,9 +103,6 @@ class DataProcessing:
 
         self.flip_horizontal()
         self.rescale()
-
-        print("{} images was processed and saved sucessfuly"
-              .format(self.processed_images))
 
     def rescale(self):
         for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
@@ -272,7 +270,7 @@ class DataProcessing:
             path = TEST_DATA
             path = path.joinpath(dir_name.name)
             if pathlib.Path(path).exists():
-                shutil.rmtree (path)
+                shutil.rmtree(path)
                 pathlib.Path(path).mkdir()
             else:
                 pathlib.Path(path).mkdir()

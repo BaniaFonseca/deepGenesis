@@ -16,9 +16,8 @@ class TResNet34(ResNet34):
 
     def train(self):
         ds = Dataset()
-        train_images, train_labels = ds.get_trainset()
-        #train_labels = to_categorical(train_labels)
-        validation_images, validation_labels = ds.get_validationset()
+        train_images, train_labels = ds.load_trainset()
+        validation_images, validation_labels = ds.load_validationtest()
         #test_labels = to_categorical(test_labels)
 
         mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath('model.h5')), monitor='val_loss',
@@ -66,7 +65,7 @@ class TResNet34(ResNet34):
 
     def test(self):
         ds = Dataset()
-        test_images, test_labels = ds.get_testset()
+        test_images, test_labels = ds.load_testset()
 
         # load json and create model
         json_file = open(RESNET34_DIR_RES.joinpath('model.json'), 'r')

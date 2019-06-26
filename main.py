@@ -7,13 +7,16 @@ import tensorflow as tf
 from train.darknet.darknet import TDarknet
 from train.resnet34.resnet34 import TResNet34
 from train.resnet50.resnet50 import TResNet50
-
+from train.inception_v4.inception_v4 import TInception_v4
 print(tf.__version__)
 
 td = TDarknet()
 tr34 = TResNet34()
 tr50 = TResNet50()
+ti = TInception_v4()
 
+ti.train()
+#ti.test()
 #tr34.train()
 #tr34.test()
 #td.train()
@@ -22,14 +25,17 @@ tr50 = TResNet50()
 #tr50.train()
 #tr50.test()
 
-dp = DataProcessing()
-#dp.process_data()
+ds = Dataset()
+#ds.save_datasets_as_npy()
 
 vs = VisualizeDataset()
 
-ds = Dataset()
+#validationtest = ds.load_validationtest()
+#testset = ds.load_testset()
 
-#images, labels = ds.get_trainset(name='ori*')
+
+
+#images, labels = ds.load_trainset()
 #vs.show_images(images=images, labels=labels, cols=6, rows=3)
 
 #testset = ds.get_testset()
