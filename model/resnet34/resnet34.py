@@ -5,6 +5,7 @@ from keras.layers import Dense, Conv2D, Flatten, \
 import keras.initializers
 import keras.backend as K
 import tensorflow as tf
+
 K.set_image_data_format('channels_last')
 
 _BATCH_NORM_DECAY = 0.9

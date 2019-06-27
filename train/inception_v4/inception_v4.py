@@ -17,8 +17,7 @@ class TInception_v4(Inception_v4):
         ds = Dataset()
         train_images, train_labels = ds.load_trainset()
         validation_images, validation_labels = ds.load_validationtest()
-
-        mc = ModelCheckpoint(str(INCEPTION_V4_DIR_RES.joinpath('model.h5')), monitor='val_loss',
+        mc =  ModelCheckpoint(str(INCEPTION_V4_DIR_RES.joinpath('model.h5')), monitor='val_loss',
                              mode='auto', verbose=1, save_best_only=True)
 
         model = self.model()
@@ -34,9 +33,9 @@ class TInception_v4(Inception_v4):
         model.summary()
         plot_model(model, show_shapes=True, to_file=INCEPTION_V4_DIR_RES.joinpath('inception_v4.png'))
 
-        # a = True
-        # if a:
-        #     return None
+        a = True
+        if a:
+            return None
 
         history = model.fit(train_images, train_labels, epochs=20, shuffle=False,
                   validation_data=(validation_images, validation_labels), callbacks=[mc])
