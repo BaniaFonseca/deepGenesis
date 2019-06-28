@@ -2,7 +2,7 @@ from config import *
 import tensorflow as tf
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Dense, Conv2D, \
-    BatchNormalization, Flatten, MaxPooling2D, Input, Add, AvgPool2D
+    BatchNormalization, Flatten, MaxPooling2D, Input, Add, AvgPool2D, Dropout
 from tensorflow.python.keras.layers.advanced_activations import LeakyReLU
 import tensorflow.python.keras.backend as backend
 
@@ -37,10 +37,18 @@ class Inception_v4():
         for _ in range(4):
             inputs = self.inception_a(inputs)
 
-        inputs = self.redution_a(inputs)
+        inputs = self.reduction_a(inputs)
 
         for _ in range(7):
             inputs = self.inception_b(inputs)
+
+        inputs = self.reduction_b(inputs)
+
+        for _ in range(3):
+            inputs = self.inception_c(inputs)
+
+        inputs = AvgPool2D(padding='SAME', pool_size=(1,1))(inputs)
+        inputs = Dropout(0.2) (inputs)
 
         return inputs
 
@@ -86,7 +94,7 @@ class Inception_v4():
 
         return Add () ([unit_1, unit_2, unit_3, unit_4])
 
-    def redution_a(self, inputs):
+    def reduction_a(self, inputs):
         unit_1 = self.max_poll(inputs, pool_size=(3,3), strides=2, padding='VALID')
 
         unit_2 = self.conv(inputs, kernel_size=3, strides=2, padding='VALID', filters=96)
@@ -115,12 +123,43 @@ class Inception_v4():
 
         return Add () ([unit_1, unit_2, unit_3, unit_4])
 
+    def reduction_b(self, inputs):
+        unit_1 = self.max_poll(inputs, pool_size=3, strides=2, padding='VALID')
 
-    def conv(self, inputs, filters, k   ernel_size, strides=1, padding='SAME'):
+        unit_2 = self.conv(inputs, filters=192, kernel_size=1)
+        unit_2 = self.conv(unit_2, filters=256, kernel_size=3, strides=2, padding='VALID')
+
+        unit_3 = self.conv(inputs, filters=256, kernel_size=1)
+        unit_3 = self.conv(unit_3, filters=256, kernel_size=(1, 7))
+        unit_3 = self.conv(unit_3, filters=320, kernel_size=(7, 1))
+        unit_3 = self.conv(unit_3, filters=256, kernel_size=3, strides=2, padding='VALID')
+
+        return Add()([unit_1, unit_2, unit_3])
+
+    def inception_c(self, inputs):
+        unit_1 = AvgPool2D(padding='SAME', pool_size=(1,1))(inputs)
+        unit_1 =  self.conv(unit_1, filters=256, kernel_size=1)
+
+        unit_2 = self.conv(inputs, filters=256, kernel_size=1)
+
+        unit_3 = self.conv(inputs, filters=384, kernel_size=1)
+        unit_3_1 = self.conv(unit_3, filters=256, kernel_size=(1,3))
+        unit_3_2 = self.conv(unit_3, filters=256, kernel_size=(3,1))
+
+        unit_4 = self.conv(inputs, filters=384, kernel_size=1)
+        unit_4 = self.conv(unit_4, filters=448, kernel_size=(1,3))
+        unit_4 = self.conv(unit_4, filters=512, kernel_size=(3,1))
+        unit_4_1 = self.conv(unit_4, filters=256, kernel_size=(3, 1))
+        unit_4_2 = self.conv(unit_4, filters=256, kernel_size=(1, 3))
+
+        return Add () ([unit_1, unit_2, unit_3_1, unit_3_2, unit_4_1, unit_4_2])
+
+    def conv(self, inputs, filters, kernel_size, strides=1, padding='SAME'):
         inputs =  Conv2D(filters=filters, kernel_size=kernel_size,
                         strides=strides, padding=padding,
                         kernel_initializer='glorot_uniform',
                         use_bias=False)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
         return inputs
 
     def max_poll(self, inputs, pool_size, strides=1, padding='SAME'):
