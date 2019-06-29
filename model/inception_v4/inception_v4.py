@@ -25,9 +25,10 @@ class Inception_v4():
         X_input = Input((HEIGHT, WIDTH, CHANELS))
         X =  X_input
         X = self.inception_v4(X)
-        X = Flatten()(X)
         X = Dense(CLASS_NUMBER, activation='softmax',
-                       kernel_initializer='glorot_uniform')(X)
+                  kernel_initializer='glorot_uniform')(X)
+
+
         model = Model(inputs=X_input, outputs=X, name='inception_v4')
         return model
 
@@ -47,9 +48,8 @@ class Inception_v4():
         for _ in range(3):
             inputs = self.inception_c(inputs)
 
-        inputs = AvgPool2D(padding='SAME', pool_size=(1,1))(inputs)
+        inputs = Flatten()(inputs)
         inputs = Dropout(0.2) (inputs)
-
         return inputs
 
     def stem(self, inputs):

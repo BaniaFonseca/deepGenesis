@@ -8,14 +8,13 @@ from dataset.exception import *
 
 class Dataset():
 
-    def __init__(self):
-        self.dp = DataProcessing()
+    def __init__(self,classe='*', name='*'):
+        self.save_datasets_as_npy(classe, name)
 
-    def save_datasets_as_npy(self):
-        self.dp.process_data()
-        self.save_trainset_as_npy()
+    def save_datasets_as_npy(self, classe='*', name='*'):
+        self.save_trainset_as_npy(classe, name)
         self.save_validationset_as_npy()
-        self.save_testset_as_npy()
+        self.save_testset_as_npy(classe, name)
 
     def save_validationset_as_npy(self):
         try:
@@ -44,13 +43,13 @@ class Dataset():
         except ImageNotFound:
             print('images not found at director: [{}]'.format(TEST_DATA.absolute()))
 
-    def save_testset_as_npy(self):
+    def save_testset_as_npy(self, classe='*', name='*'):
         try:
             path = TEST_DATA
             if len(list(path.glob('*/*'))) is 0:
                 raise ImageNotFound
 
-            test_dataset = self.generate_dataset(path)
+            test_dataset = self.generate_dataset(path, classe, name)
             iterator = tf.compat.v1.data.make_one_shot_iterator(test_dataset)
             next_element = iterator.get_next()
             images = []
@@ -70,14 +69,14 @@ class Dataset():
         except ImageNotFound:
             print('images not found at director: [{}]'.format(TEST_DATA.absolute()))
 
-    def save_trainset_as_npy(self):
+    def save_trainset_as_npy(self, classe='*', name='*'):
         try:
             path = TRAIN_DATA
             size = len(list(path.glob('*/*')))
             if len(list(path.glob('*/*'))) is 0:
                 raise ImageNotFound
 
-            train_dataset = self.generate_dataset(path)
+            train_dataset = self.generate_dataset(path, classe ,name)
             iterator = tf.compat.v1.data.make_one_shot_iterator(train_dataset)
             next_element = iterator.get_next()
             images = []
@@ -97,13 +96,16 @@ class Dataset():
         except ImageNotFound:
             print('images not found at director: [{}]'.format(TRAIN_DATA.absolute()))
 
-    def generate_dataset(self, path):
-        all_image_paths = [str(path) for path in list(path.glob('*/*'))]
-        random.shuffle(all_image_paths)
+    def generate_dataset(self, path, classe='*', name='*'):
+        all_image_paths = [str(path) for path in list(path.glob(classe+'/'+name))]
+        all_image_paths.sort()
 
+        # random.shuffle(all_image_paths, random.seed(7))
         label_to_index = dict((name, index) for index, name in enumerate(LABEL_NAMES))
         labels = \
             [label_to_index[pathlib.Path(path).parent.name] for path in all_image_paths]
+        # print(labels)
+
         paths_ds = tf.data.Dataset.from_tensor_slices(all_image_paths)
         images_ds = \
             paths_ds.map(self.load_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)

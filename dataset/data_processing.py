@@ -103,6 +103,9 @@ class DataProcessing:
 
         self.flip_horizontal()
         self.rescale()
+        self.brightness()
+        self.zoom()
+        self.rotate()
 
     def rescale(self):
         for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):

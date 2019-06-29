@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from tensorflow.python.keras.utils import plot_model
 from tensorflow.python.keras.models import model_from_json
 from tensorflow.python.keras.callbacks import *
+from tensorflow.python.keras.optimizers import Adam
 
 class TInception_v4(Inception_v4):
 
@@ -14,15 +15,18 @@ class TInception_v4(Inception_v4):
         pass
 
     def train(self):
-        ds = Dataset()
+        ds = Dataset(name='orig*')
         train_images, train_labels = ds.load_trainset()
         validation_images, validation_labels = ds.load_validationtest()
         mc =  ModelCheckpoint(str(INCEPTION_V4_DIR_RES.joinpath('model.h5')), monitor='val_loss',
                              mode='auto', verbose=1, save_best_only=True)
 
         model = self.model()
-        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy',
+
+        adam = Adam(lr=1e-6)
+        model.compile(optimizer=adam, loss='sparse_categorical_crossentropy',
                       metrics=['accuracy'])
+
 
         # # serialize model to JSON
         model_json = model.to_json()
@@ -33,11 +37,11 @@ class TInception_v4(Inception_v4):
         model.summary()
         plot_model(model, show_shapes=True, to_file=INCEPTION_V4_DIR_RES.joinpath('inception_v4.png'))
 
-        a = True
-        if a:
-            return None
+        # a = True
+        # if a:
+        #     return None
 
-        history = model.fit(train_images, train_labels, epochs=20, shuffle=False,
+        history = model.fit(train_images, train_labels, epochs=200, shuffle=True, verbose=2,
                   validation_data=(validation_images, validation_labels), callbacks=[mc])
 
         self.test()
