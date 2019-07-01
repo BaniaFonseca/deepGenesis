@@ -30,7 +30,7 @@ class TResNet34(ResNet34):
                              mode='auto', verbose=1, save_best_only=True)
 
         model = None
-        adam = Adam(lr=1e-6)
+        adam = Adam(lr=1e-5)
 
         if not retrain:
             model = self.model()
@@ -96,14 +96,14 @@ class TResNet34(ResNet34):
         # # evaluate loaded model on test data
         loaded_model.compile(loss='sparse_categorical_crossentropy',
                              optimizer=adam, metrics=['accuracy'])
-        score = loaded_model.evaluate(test_images, test_labels, verbose=1)
-        print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1] * 100))
-        preds = loaded_model.evaluate(test_images, test_labels)
-        print('Loss = {}'.format(str(preds[0])))
-        print('Test Accuracy = {}'.format(str(preds[1])))
-
+        score = 0
 
         for i in range(len(test_labels)):
             probs = loaded_model.predict(np.array([test_images[i],]))
             label = LABEL_NAMES[test_labels[i]]
-            print('{} -> {}'.format(label, probs))
+            print("%s: %.2f%%" %(label,float(probs[0][test_labels[i]]* 100)))
+
+            if  probs[0][test_labels[i]] > 0.5:
+                score = score +1
+
+        print('\n acc {}'.format(score/(len(test_labels) * 1.0)))

@@ -65,3 +65,11 @@ class VisualizeDataset:
             plt.yticks([])
             plt.xlabel(labels[n])
         plt.show()
+
+    def show_img(self, img):
+        plt.figure(figsize=(32, 32))
+        plt.imshow(img)
+        plt.colorbar()
+        plt.xticks([])
+        plt.yticks([])
+        plt.show()
