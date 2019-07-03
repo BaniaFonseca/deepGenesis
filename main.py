@@ -19,8 +19,8 @@ vs = VisualizeDataset()
 # tr50 = TResNet50()
 # ti = TInception_v4()
 
-# all = \
-#     [str(path) for path in list(ALL_DATA.glob('*/*'))]
+all = \
+     [str(path) for path in list(ALL_DATA.glob('*/*'))]
 
 
 
@@ -28,9 +28,12 @@ dp = DataProcessing()
 # dp.process_and_save_data()
 
 
-# img = dp.read_img_and_clear_noise(all[8])
-
-# img = dp.random_noise(img)
+img = dp.read_img_and_clear_noise(all[8])
+transformatios = [dp.flip, dp.color_inversion,
+                  dp.blur, dp.random_noise, dp.rotate]
+dp.augment(img, all[8], transformatios)
+# ci = list([dp.color_inversion])
+# img = ci[0](img)
 # img = dp.flip(img)
 # img = dp.blur(img)
 # dp.save_img(img, 'test1.jpeg')
@@ -59,8 +62,8 @@ ds = Dataset()
 
 
 
-images, labels = ds.load_trainset()
-vs.show_images(images=images, labels=labels, cols=6, rows=3)
+# images, labels = ds.load_trainset()
+# vs.show_images(images=images, labels=labels, cols=6, rows=3)
 
 #testset = ds.get_testset()
 #vs.show_images(dataset=testset, cols=1, rows=1)

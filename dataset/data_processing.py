@@ -4,10 +4,10 @@ import random
 import cv2
 import numpy as np
 import pathlib
-from keras.preprocessing.image import save_img, img_to_array, array_to_img
+from keras.preprocessing.image import save_img
 from keras.preprocessing.image import  load_img
 import shutil
-from skimage import data, img_as_float
+from skimage import img_as_float
 from skimage import exposure
 from skimage.util import random_noise
 from skimage.util import invert
@@ -101,7 +101,6 @@ class DataProcessing:
     #4
     def flip(self, img):
         return img[:, ::-1]
-
     #5
     def random_noise(self, img):
         return random_noise(img)
@@ -113,3 +112,14 @@ class DataProcessing:
         v_min, v_max = np.percentile(img, (0.2, 99.8))
         better_contrast = exposure.rescale_intensity(img, in_range=(v_min, v_max))
         return better_contrast
+
+    def augment(self, img, path, transformatios=list()):
+        if len(transformatios) > 0:
+            for i, transf in enumerate(transformatios):
+                t_img = transf(img)
+                filename = self.build_filename(TRAIN_DATA, path)
+                self.save_img(filename, t_img)
+                print(filename)
+                remain_transformatios = list(transformatios)
+                del remain_transformatios [i]
+                self.augment(t_img, path, remain_transformatios)
