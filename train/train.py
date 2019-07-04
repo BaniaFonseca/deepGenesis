@@ -12,5 +12,7 @@ class Train(Dataset):
     def start_training(self):
         pass
 
+    def plot_precision_recall_curve(self):
+        pass
 
 

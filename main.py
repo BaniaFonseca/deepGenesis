@@ -8,14 +8,17 @@ from train.darknet.darknet import TDarknet
 from train.resnet34.resnet34 import TResNet34
 from train.resnet50.resnet50 import TResNet50
 from train.inception_v4.inception_v4 import TInception_v4
-
+from test.test_model import TestModel
 
 print(tf.__version__)
 
 vs = VisualizeDataset()
 
+test_model = TestModel()
+test_model.test(RESNET34_DIR_RES)
+
 # td = TDarknet()
-# tr34 = TResNet34()
+tr34 = TResNet34()
 # tr50 = TResNet50()
 # ti = TInception_v4()
 
@@ -31,7 +34,7 @@ dp = DataProcessing()
 img = dp.read_img_and_clear_noise(all[8])
 transformatios = [dp.flip, dp.color_inversion,
                   dp.blur, dp.random_noise, dp.rotate]
-dp.augment(img, all[8], transformatios)
+# dp.augment(img, all[8], transformatios)
 # ci = list([dp.color_inversion])
 # img = ci[0](img)
 # img = dp.flip(img)

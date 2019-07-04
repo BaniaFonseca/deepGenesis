@@ -9,18 +9,18 @@ from keras.models import model_from_json
 import tensorflow as tf
 from keras.callbacks import *
 from keras.optimizers import Adam
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.metrics import auc
+from sklearn.metrics import average_precision_score
+from inspect import signature
 
 class TResNet34(ResNet34):
 
     def __init__(self):
         pass
 
-    def train(self, retrain=False, test=False):
-
-        if test:
-            self.test()
-            return None
-
+    def train(self, retrain=False):
         ds = Dataset()
         train_images, train_labels = ds.load_trainset()
         validation_images, validation_labels = ds.load_validationtest()
@@ -60,8 +60,6 @@ class TResNet34(ResNet34):
         history = model.fit(train_images, train_labels, epochs=80,
                   validation_data=(validation_images, validation_labels), callbacks=[mc], verbose=2)
 
-        self.test()
-
         plt.plot(history.history['acc'])
         plt.plot(history.history['val_acc'])
         plt.title('Model accuracy')
@@ -78,32 +76,3 @@ class TResNet34(ResNet34):
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Validation'], loc='upper left')
         plt.show()
-
-
-    def test(self, classe='*'):
-        ds = Dataset(classe)
-        test_images, test_labels = ds.load_testset()
-
-        loaded_model = None
-        adam = Adam(lr=1e-6)
-        # load json and create model
-        with open(RESNET34_DIR_RES.joinpath('model.json'), 'r') as json_file:
-            loaded_model_json = json_file.read()
-            loaded_model = model_from_json(loaded_model_json)
-        #load weights into new model
-        loaded_model.load_weights(RESNET34_DIR_RES.joinpath("model.h5"))
-        print("Loaded model from disk")
-        # # evaluate loaded model on test data
-        loaded_model.compile(loss='sparse_categorical_crossentropy',
-                             optimizer=adam, metrics=['accuracy'])
-        score = 0
-
-        for i in range(len(test_labels)):
-            probs = loaded_model.predict(np.array([test_images[i],]))
-            label = LABEL_NAMES[test_labels[i]]
-            print("%s: %.2f%%" %(label,float(probs[0][test_labels[i]]* 100)))
-
-            if  probs[0][test_labels[i]] > 0.5:
-                score = score +1
-
-        print('\n acc {}'.format(score/(len(test_labels) * 1.0)))
