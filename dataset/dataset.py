@@ -8,7 +8,6 @@ from dataset.exception import *
 class Dataset():
 
     def __init__(self, label='*'):
-        # self.save_datasets_as_npy(label)
         pass
 
     def save_datasets_as_npy(self, label='*'):

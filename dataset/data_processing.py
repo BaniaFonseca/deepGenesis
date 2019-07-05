@@ -9,14 +9,19 @@ from keras.preprocessing.image import  load_img
 import shutil
 from skimage import img_as_float
 from skimage import exposure
-from skimage.util import random_noise
-from skimage.util import invert
+from skimage.util import invert, random_noise
 from skimage.transform import rotate
 from scipy import ndimage
+
 
 class DataProcessing:
 
     def __init__(self):
+        self.DATASET_SIZE = 0
+        self.TRAIN_SIZE = int(0.7 * self.DATASET_SIZE)
+        self.TEST_SIZE = int(0.15 * self.DATASET_SIZE)
+        self.VALIDATION_SIZE = int(0.15 * self.DATASET_SIZE)
+
         self.processed_images = 0
         try:
             path = ALL_DATA
@@ -34,15 +39,19 @@ class DataProcessing:
 
             random.shuffle(image_paths, random.seed())
 
+            self.DATASET_SIZE = len(list(ALL_DATA.glob(label+'/*')))
+            self.TRAIN_SIZE = int(0.7 * self.DATASET_SIZE)
+            self.TEST_SIZE = int(0.15 * self.DATASET_SIZE)
+            self.VALIDATION_SIZE = int(0.15 * self.DATASET_SIZE)
+
             self.process_and_save_testdata(image_paths)
             self.process_and_save_validationdata(image_paths)
             self.process_and_save_traindata(image_paths)
-
             del labels[0]
             self.process_and_save_data(labels)
 
     def process_and_save_testdata(self, image_paths):
-        for i in range(TEST_SIZE):
+        for i in range(self.TEST_SIZE):
             path = image_paths[i]
             img = self.read_img_and_clear_noise(path)
             filename = self.build_filename(TEST_DATA, path)
@@ -50,7 +59,7 @@ class DataProcessing:
             print(filename)
 
     def process_and_save_validationdata(self, image_paths):
-        for i in range(TEST_SIZE, TEST_SIZE + VALIDATION_SIZE):
+        for i in range(self.TEST_SIZE, self.TEST_SIZE + self.VALIDATION_SIZE):
             path = image_paths[i]
             img = self.read_img_and_clear_noise(path)
             filename = self.build_filename(VALIDATION_DATA, path)
@@ -58,12 +67,13 @@ class DataProcessing:
             print(filename)
 
     def process_and_save_traindata(self, image_paths):
-        for i in range(TEST_SIZE+VALIDATION_SIZE, DATASET_SIZE):
+        for i in range(self.TEST_SIZE+self.VALIDATION_SIZE, self.DATASET_SIZE):
             path = image_paths[i]
             img = self.read_img_and_clear_noise(path)
             filename = self.build_filename(TRAIN_DATA, path)
             self.save_img(filename, img)
             print(filename)
+            self.augment(img, path)
 
     def build_filename(self, DATA_ROOT, img_path):
         filename = DATA_ROOT
@@ -93,15 +103,16 @@ class DataProcessing:
     def color_inversion(self, img):
         return invert(img)
     #2
-    def rotate(self, img):
-        return rotate(img, 45)
-    #3
     def blur(self, img):
         return ndimage.uniform_filter(img, size=(21, 21, 1))
-    #4
+    #3
     def flip(self, img):
         return img[:, ::-1]
-    #5
+
+    #4
+    def rotate(self, img):
+        return rotate(img, 45)
+    # 5
     def random_noise(self, img):
         return random_noise(img)
 
@@ -113,13 +124,19 @@ class DataProcessing:
         better_contrast = exposure.rescale_intensity(img, in_range=(v_min, v_max))
         return better_contrast
 
-    def augment(self, img, path, transformatios=list()):
+    def augment(self, img, path, transformatios=[], first=True):
+
+        if first:
+            transformatios = [self.flip, self.color_inversion, self.blur,
+                              self.rotate, self.random_noise]
+
         if len(transformatios) > 0:
             for i, transf in enumerate(transformatios):
                 t_img = transf(img)
                 filename = self.build_filename(TRAIN_DATA, path)
                 self.save_img(filename, t_img)
                 print(filename)
-                remain_transformatios = list(transformatios)
-                del remain_transformatios [i]
-                self.augment(t_img, path, remain_transformatios)
+
+                # remain_transformatios = list(transformatios)
+                # del remain_transformatios[i]
+                # self.augment(t_img, path, remain_transformatios, False)

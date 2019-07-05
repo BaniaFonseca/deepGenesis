@@ -14,16 +14,18 @@ print(tf.__version__)
 
 vs = VisualizeDataset()
 
+train = Train()
+
+
 test_model = TestModel()
-test_model.test(RESNET34_DIR_RES)
 
 # td = TDarknet()
 tr34 = TResNet34()
 # tr50 = TResNet50()
 # ti = TInception_v4()
 
-all = \
-     [str(path) for path in list(ALL_DATA.glob('*/*'))]
+# all = \
+#      [str(path) for path in list(ALL_DATA.glob('*/*'))]
 
 
 
@@ -31,10 +33,10 @@ dp = DataProcessing()
 # dp.process_and_save_data()
 
 
-img = dp.read_img_and_clear_noise(all[8])
-transformatios = [dp.flip, dp.color_inversion,
-                  dp.blur, dp.random_noise, dp.rotate]
-# dp.augment(img, all[8], transformatios)
+# img = dp.read_img_and_clear_noise(all[8])
+# transformatios = [dp.flip, dp.color_inversion,
+#                    dp.blur, dp.random_noise, dp.rotate]
+# dp.augment(img, all[8])
 # ci = list([dp.color_inversion])
 # img = ci[0](img)
 # img = dp.flip(img)
@@ -47,7 +49,9 @@ transformatios = [dp.flip, dp.color_inversion,
 
 # ti.train()
 #ti.test()
-# tr34.train(retrain=True, test=True)
+# train.start_training(tr34, retrain=True, model_dir=RESNET34_DIR_RES)
+# test_model.test(RESNET34_DIR_RES)
+
 # tr34.test()
 #td.train()
 #td.test()
@@ -56,8 +60,7 @@ transformatios = [dp.flip, dp.color_inversion,
 #tr50.test()
 
 ds = Dataset()
-
-#ds.save_datasets_as_npy()
+ds.save_datasets_as_npy()
 
 
 #validationtest = ds.load_validationtest()

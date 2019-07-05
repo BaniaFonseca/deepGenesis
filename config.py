@@ -34,11 +34,6 @@ if not VALIDATION_DATA.exists():
 if not TRAIN_DATA.exists():
     TRAIN_DATA.mkdir()
 
-DATASET_SIZE = len(list(ALL_DATA.glob('empty/*')))
-TRAIN_SIZE = int(0.7 * DATASET_SIZE)
-TEST_SIZE = int(0.15 * DATASET_SIZE)
-VALIDATION_SIZE = int(0.15 * DATASET_SIZE)
-
 HEIGHT = 256
 WIDTH = 256
 CHANELS = 3
