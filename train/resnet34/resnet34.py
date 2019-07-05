@@ -47,7 +47,7 @@ class TResNet34(ResNet34):
         #     return None
 
 
-        history = model.fit(train_images, train_labels, epochs=20, shuffle=True,
+        history = model.fit(train_images, train_labels, epochs=20,
                   validation_data=(validation_images, validation_labels), callbacks=[mc], verbose=2)
 
         # pth = PlotTrainHistory(history)

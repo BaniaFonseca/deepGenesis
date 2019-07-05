@@ -4,11 +4,12 @@ from tensorflow.python.keras.models import model_from_json
 from tensorflow.python.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import precision_score, recall_score
-from sklearn.metrics import auc, average_precision_score
+from sklearn.metrics import precision_score, recall_score, accuracy_score
+from sklearn.metrics import auc, average_precision_score, f1_score
 from inspect import signature
 from util.visualize_dataset import VisualizeDataset
 import numpy as np
+from pathlib import Path
 
 class TestModel:
 
@@ -56,23 +57,42 @@ class TestModel:
 
                 probs.append(pred[0][test_labels[i]])
 
-        self.plot_pr_curve(test_labels, probs, y_hat)
+        self.plot_pr_curve(test_labels, probs, y_hat, model_dir)
 
-    def plot_pr_curve(self, true_labels, probs, y_hat):
+    def plot_pr_curve(self, true_labels, probs, y_hat, model_dir=None):
+        fig = plt.figure()
+        fig.suptitle(model_dir.joinpath(Path(model_dir)).parent.name, fontsize=12, fontweight='bold')
+        ax = fig.add_subplot(111)
+
         precision, recall, thresholds = precision_recall_curve(true_labels, probs)
         ap = average_precision_score(true_labels, probs)
-        prec = precision_score(true_labels, y_hat)
-        rec = recall_score(true_labels, y_hat)
-        area = auc(recall, precision)
+        p = precision_score(true_labels, y_hat)
+        r = recall_score(true_labels, y_hat)
+        pr_auc = auc(recall, precision)
+        acc = accuracy_score(true_labels, y_hat)
+        plt.title("Precision-Recall Curve")
+        f1 = f1_score(true_labels, y_hat)
         plt.plot(recall, precision, marker='o',
-                 label='PR curve (area = %0.2f) \n(AP = %0.2f)' % (area, ap))
+                 label='PR Curve')
         plt.xlabel('Recall')
         plt.ylabel('Precision')
         plt.ylim([0.0, 1.05])
         plt.xlim([0.0, 1.0])
-        plt.plot([0, 1], [0.5, 0.5], linestyle='--')
-        # plot the roc curve for the model
-        plt.title('Precision-Recall curve: PRECISON=%0.2f, RECALL=%0.2f' % (prec, rec))
+        plt.plot([0, 1], [0.5, 0.5], linestyle='-', color='r')
+
+        results = 'PR-AUC = {0:.3f}\n'.format(pr_auc)
+        results += 'AP = {0:.3f}\n'.format(ap)
+        results += 'F1 = {0:.3f}\n'.format(f1)
+        results += 'PRECISION = {0:.3f}\n'.format(p)
+        results += 'RECALL = {0:.3f}\n'.format(r)
+        results += 'ACC = {0:.3f}'.format(acc)
+
+        plt.text(0.1, 0.1,results, fontsize=12,
+            horizontalalignment='left',
+            verticalalignment='bottom',
+            transform = ax.transAxes,
+            bbox=dict(facecolor='white', alpha=0.7))
+
         plt.legend(loc="lower right")
         step_kwargs = ({'step': 'post'}
                        if 'step' in signature(plt.fill_between).parameters
@@ -80,4 +100,8 @@ class TestModel:
         plt.step(recall, precision, color='b', alpha=0.2,
                  where='post')
         plt.fill_between(recall, precision, alpha=0.2, color='b', **step_kwargs)
+
+        if not (model_dir is None):
+            plt.savefig(model_dir.joinpath(Path(model_dir).parent.name+'_PR_curve.jpeg'))
+
         plt.show()

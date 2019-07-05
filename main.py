@@ -50,7 +50,7 @@ dp = DataProcessing()
 # ti.train()
 #ti.test()
 # train.start_training(tr34, retrain=True, model_dir=RESNET34_DIR_RES)
-# test_model.test(RESNET34_DIR_RES)
+test_model.test(RESNET34_DIR_RES)
 
 # tr34.test()
 #td.train()
@@ -60,7 +60,7 @@ dp = DataProcessing()
 #tr50.test()
 
 ds = Dataset()
-ds.save_datasets_as_npy()
+# ds.save_datasets_as_npy()
 
 
 #validationtest = ds.load_validationtest()

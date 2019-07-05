@@ -23,13 +23,14 @@ class Train:
 
     def start_training(self, model, retrain=False, model_dir=None):
         ds = Dataset()
+        ds.save_trainset_as_npy(label='empty')
         train_images, train_labels = ds.load_trainset()
-        validation_images, validation_labels = ds.load_validationtest()
-        chunks = int((len(train_images)/128))
+        batch_size = len(train_images)
+        chunks = int((len(train_images)/batch_size))
         min = 0
 
         for i in range(chunks):
-            max = ((i + 1) * 128)
+            max = ((i + 1) * batch_size)
             batch_images = train_images[min:max]
             batch_labels = train_labels[min:max]
             min = max
