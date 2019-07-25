@@ -7,6 +7,10 @@ TEST_DATA = pathlib.Path('data_root/test_data')
 TRAIN_DATA = pathlib.Path('data_root/train_data')
 DATA_ROOTS = [TRAIN_DATA,VALIDATION_DATA,TEST_DATA]
 
+TRAIN_PROPORSION = 1.0
+TEST_PROPORSION = 0.0
+VALIDATION_PROPORSION = 0.0
+
 DARKNET_DIR = pathlib.Path('model/darknet')
 DARKNET_DIR_RES = pathlib.Path('model/darknet/resource')
 

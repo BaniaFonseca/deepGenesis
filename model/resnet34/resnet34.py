@@ -9,7 +9,7 @@ import tensorflow as tf
 K.set_image_data_format('channels_last')
 
 _BATCH_NORM_DECAY = 0.9
-_BATCH_NORM_EPSILON = 1e-05
+_BATCH_NORM_EPSILON = 1e-03
 _WEIGHT_DECAY = 0.0001
 _LEAKY_RELU = 0.1
 _LEARNING_RATE = 0.01
@@ -145,5 +145,7 @@ class ResNet34():
 
     def batch_norm(self, inputs):
         """Performs a batch normalization using a standard set of parameters."""
-        return BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
-                                    epsilon=_BATCH_NORM_EPSILON, scale=True)(inputs)
+        return inputs
+
+            # BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
+            #                          epsilon=_BATCH_NORM_EPSILON, scale=True)(inputs)

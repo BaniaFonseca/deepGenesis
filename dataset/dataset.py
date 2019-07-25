@@ -12,8 +12,8 @@ class Dataset():
 
     def save_datasets_as_npy(self, label='*'):
         self.save_trainset_as_npy(label)
-        self.save_validationset_as_npy()
-        self.save_testset_as_npy(label)
+        # self.save_validationset_as_npy()
+        # self.save_testset_as_npy(label)
 
     def save_validationset_as_npy(self):
         try:

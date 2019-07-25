@@ -18,11 +18,12 @@ class DataProcessing:
 
     def __init__(self):
         self.DATASET_SIZE = 0
-        self.TRAIN_SIZE = int(0.7 * self.DATASET_SIZE)
-        self.TEST_SIZE = int(0.15 * self.DATASET_SIZE)
-        self.VALIDATION_SIZE = int(0.15 * self.DATASET_SIZE)
+        self.TRAIN_SIZE = int(TRAIN_PROPORSION * self.DATASET_SIZE)
+        self.TEST_SIZE = int(TEST_PROPORSION * self.DATASET_SIZE)
+        self.VALIDATION_SIZE = int(VALIDATION_PROPORSION * self.DATASET_SIZE)
 
         self.processed_images = 0
+
         try:
             path = ALL_DATA
             if len(list(path.glob('*/*'))) is 0:
@@ -40,12 +41,12 @@ class DataProcessing:
             random.shuffle(image_paths, random.seed())
 
             self.DATASET_SIZE = len(list(ALL_DATA.glob(label+'/*')))
-            self.TRAIN_SIZE = int(0.7 * self.DATASET_SIZE)
-            self.TEST_SIZE = int(0.15 * self.DATASET_SIZE)
-            self.VALIDATION_SIZE = int(0.15 * self.DATASET_SIZE)
+            self.TRAIN_SIZE = int(TRAIN_PROPORSION * self.DATASET_SIZE)
+            self.TEST_SIZE = int(TEST_PROPORSION * self.DATASET_SIZE)
+            self.VALIDATION_SIZE = int(VALIDATION_PROPORSION * self.DATASET_SIZE)
 
-            self.process_and_save_testdata(image_paths)
-            self.process_and_save_validationdata(image_paths)
+            # self.process_and_save_testdata(image_paths)
+            # self.process_and_save_validationdata(image_paths)
             self.process_and_save_traindata(image_paths)
             del labels[0]
             self.process_and_save_data(labels)
@@ -73,7 +74,7 @@ class DataProcessing:
             filename = self.build_filename(TRAIN_DATA, path)
             self.save_img(filename, img)
             print(filename)
-            self.augment(img, path)
+            # self.augment(img, path)
 
     def build_filename(self, DATA_ROOT, img_path):
         filename = DATA_ROOT
@@ -127,8 +128,8 @@ class DataProcessing:
     def augment(self, img, path, transformatios=[], first=True):
 
         if first:
-            transformatios = [self.flip, self.color_inversion, self.blur,
-                              self.rotate, self.random_noise]
+            transformatios = [self.flip, self.blur,
+                              self.rotate, self.random_noise, self.color_inversion]
 
         if len(transformatios) > 0:
             for i, transf in enumerate(transformatios):

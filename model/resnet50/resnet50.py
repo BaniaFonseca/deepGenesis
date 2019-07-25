@@ -1,9 +1,9 @@
 from config import *
-from keras.models import Model
-from keras.layers import Dense, Conv2D, Flatten, \
-    ZeroPadding2D, BatchNormalization, Flatten, MaxPooling2D, UpSampling2D
-import keras.initializers
-import keras.backend as K
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.layers import Dense, Conv2D, \
+    BatchNormalization, Flatten, MaxPooling2D, Input, Add, AvgPool2D, Dropout
+from tensorflow.python.keras.layers.advanced_activations import LeakyReLU
+import tensorflow.python.keras.backend as K
 import tensorflow as tf
 K.set_image_data_format('channels_last')
 
@@ -17,7 +17,7 @@ class ResNet50():
         pass
 
     def model(self):
-        X_input = keras.layers.Input((HEIGHT, WIDTH, CHANELS))
+        X_input = Input((HEIGHT, WIDTH, CHANELS))
         X = X_input
         X = self.resnet_50(X)
         X = Flatten(name='FC') (X)
@@ -32,16 +32,16 @@ class ResNet50():
         inputs = Conv2D(filters=64, kernel_size=7, strides=2, padding='VALID', name='conv_1',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = MaxPooling2D(pool_size=(3,3), strides=2)(inputs)
         inputs = self.batch_norm(inputs)
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = Conv2D(filters=256, kernel_size=3, strides=2, padding='VALID',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_II(inputs)
 
@@ -49,7 +49,7 @@ class ResNet50():
                         name='conv_II_POLL',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_III(inputs)
 
@@ -57,7 +57,7 @@ class ResNet50():
                         name='conv_III_POLL',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_IV(inputs)
 
@@ -67,7 +67,7 @@ class ResNet50():
 
         inputs = self.batch_norm(inputs)
 
-        inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+        inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
         inputs = self.conv_V(inputs)
         return inputs
 
@@ -78,19 +78,19 @@ class ResNet50():
                             name='conv_3'+str(i+1) ,kernel_initializer='glorot_uniform',
                             use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=64, kernel_size=3, strides=1, padding='SAME',
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=256, kernel_size=1, strides=1, padding='SAME',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
 
-            inputs = keras.layers.Add()([inputs, shortcut])
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = Add()([inputs, shortcut])
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs
         return inputs
 
@@ -100,19 +100,19 @@ class ResNet50():
             inputs = Conv2D(filters=128, kernel_size=1, strides=1,
                             padding='SAME', kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=128, kernel_size=3, strides=1,
                             padding='SAME', kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=512, kernel_size=1, strides=1, padding='SAME',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
 
-            inputs = keras.layers.Add()([inputs, shortcut])
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = Add()([inputs, shortcut])
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs
         return inputs
 
@@ -123,7 +123,7 @@ class ResNet50():
                             padding='SAME', kernel_initializer='glorot_uniform',
                             use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=256, kernel_size=3, strides=1,
                             padding='SAME', kernel_initializer='glorot_uniform',
@@ -134,8 +134,8 @@ class ResNet50():
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
 
-            inputs = keras.layers.Add()([inputs, shortcut])
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = Add()([inputs, shortcut])
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs
         return inputs
 
@@ -145,23 +145,23 @@ class ResNet50():
             inputs = Conv2D(filters=512, kernel_size=1, strides=1,
                             padding='SAME', kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=512, kernel_size=3, strides=1,
                             padding='SAME', kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
             inputs = Conv2D(filters=2048, kernel_size=1, strides=1, padding='SAME',
                             kernel_initializer='glorot_uniform', use_bias=False)(inputs)
             inputs = self.batch_norm(inputs)
 
-            inputs = keras.layers.Add()([inputs, shortcut])
-            inputs = keras.layers.advanced_activations.LeakyReLU(alpha=_LEAKY_RELU)(inputs)
+            inputs = Add()([inputs, shortcut])
+            inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
             shortcut = inputs
         return inputs
 
     def batch_norm(self, inputs):
         """Performs a batch normalization using a standard set of parameters."""
-        return keras.layers.BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
+        return BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
                                     epsilon=_BATCH_NORM_EPSILON, scale=True)(inputs)

@@ -5,21 +5,19 @@ from tensorflow.python.keras.utils import plot_model
 from tensorflow.python.keras.models import model_from_json
 from tensorflow.python.keras.callbacks import *
 from tensorflow.python.keras.optimizers import Adam
-from train.train import PlotTrainHistory
 
 class TResNet34(ResNet34):
 
     def __init__(self):
         pass
 
-    def train(self, train_images, train_labels, retrain=False):
-        ds = Dataset()
-        validation_images, validation_labels = ds.load_validationtest()
+    def train(self, train_images, train_labels, validation_images, validation_labels,
+              retrain=False, prefix="", lr=1e-4, epochs=20):
 
-        mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath('model.h5')), monitor='val_loss',
+        mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath(prefix+'model.h5')), monitor='val_loss',
                              mode='auto', verbose=1, save_best_only=True)
         model = None
-        adam = Adam(lr=1e-6)
+        adam = Adam(lr=lr)
 
         if not retrain:
             model = self.model()
@@ -33,7 +31,7 @@ class TResNet34(ResNet34):
                 loaded_model_json = json_file.read()
                 model = model_from_json(loaded_model_json)
             # load weights into new model
-            model.load_weights(str(RESNET34_DIR_RES.joinpath("model.h5")))
+            model.load_weights(str(RESNET34_DIR_RES.joinpath(prefix+"model.h5")))
             print("Loaded model from disk")
 
         model.compile(optimizer=adam, loss='sparse_categorical_crossentropy',
@@ -47,8 +45,7 @@ class TResNet34(ResNet34):
         #     return None
 
 
-        history = model.fit(train_images, train_labels, epochs=20,
+        history = model.fit(train_images, train_labels, epochs=epochs,
                   validation_data=(validation_images, validation_labels), callbacks=[mc], verbose=2)
 
-        # pth = PlotTrainHistory(history)
-        # pth.start()
+        return history

@@ -28,7 +28,6 @@ class Inception_v4():
         X = Dense(CLASS_NUMBER, activation='softmax',
                   kernel_initializer='glorot_uniform')(X)
 
-
         model = Model(inputs=X_input, outputs=X, name='inception_v4')
         return model
 

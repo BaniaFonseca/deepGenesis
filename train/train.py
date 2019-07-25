@@ -2,60 +2,65 @@ import tensorflow as tf
 from config import *
 from dataset.dataset import Dataset
 from threading import Thread
-import matplotlib.pyplot as plt
 from test.test_model import TestModel
-
-class ROC(Thread):
-
-    def __init__(self, model_dir):
-        super(ROC, self).__init__()
-        self.model_dir = model_dir
-        self.test_model = TestModel()
-
-    def run(self):
-        self.test_model.test(self.model_dir)
-
+import matplotlib.pyplot as plt
+from pathlib import Path
+from test.test_model import TestModel
+from sklearn.model_selection import StratifiedKFold
+import random
 
 class Train:
 
     def __init__(self):
-        pass
+        self.test_model = None
+        self.plot_train_history = None
+        self.history = None
 
     def start_training(self, model, retrain=False, model_dir=None):
         ds = Dataset()
-        ds.save_trainset_as_npy(label='empty')
-        train_images, train_labels = ds.load_trainset()
-        batch_size = len(train_images)
-        chunks = int((len(train_images)/batch_size))
-        min = 0
+        X, Y = ds.load_trainset()
+        kfold_splits = 4
+        seed = 7
+        skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True, random_state=seed)
 
-        for i in range(chunks):
-            max = ((i + 1) * batch_size)
-            batch_images = train_images[min:max]
-            batch_labels = train_labels[min:max]
-            min = max
+        for k, (train, test) in enumerate(skf.split(X, Y), 1):
+            prefix = "fold_" + str(k) + "_"
+            print('fold:{}\n'.format(k))
 
-            print('batch {}: batch size: {}'.format(i, len(batch_images)))
-            if i > 0:
-                model.train(batch_images, batch_labels, retrain=True)
-            else:
-                model.train(batch_images, batch_labels, retrain)
+            for j, (lr, epochs) in enumerate([(1e-4, 40), (1e-5, 20)]):
+                if j == 0:
+                    self.history = model.train(train_images=X[train], train_labels=Y[train],validation_images=X[test],
+                            validation_labels=Y[test], retrain=retrain, prefix=prefix, lr=lr, epochs=epochs)
+                    plt.close()
+                    self.plot_train_history = PlotTrainHistory(history=self.history,                                                               model_dir=model_dir, prefix=prefix)
+                    self.plot_train_history.run()
+                else:
+                    self.history = model.train(train_images=X[train], train_labels=Y[train], validation_images=X[test],
+                                validation_labels=Y[test], retrain=True, prefix=prefix, lr=lr, epochs=epochs)
 
+                self.test_model = TestModel(model_dir=model_dir,test_images=X[test],test_labels=Y[test], prefix=prefix)
+                self.test_model.run()
+                plt.close()
+        print("Done!\n")
 
 class PlotTrainHistory(Thread):
 
-    def __init__(self, history):
+    def __init__(self, history, model_dir=None, prefix=""):
         super(PlotTrainHistory, self).__init__()
         self.history = history
+        self.model_dir = model_dir
+        self.prefix = prefix
 
     def run(self):
+
         plt.plot(self.history.history['acc'])
         plt.plot(self.history.history['val_acc'])
         plt.title('Model accuracy')
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Validation'], loc='upper left')
-        plt.show()
+        plt.savefig(self.model_dir.joinpath(self.prefix + Path(self.model_dir).parent.name + '_acc.jpeg'))
+        plt.close()
 
         # Plot training & validation loss values
         plt.plot(self.history.history['loss'])
@@ -64,4 +69,5 @@ class PlotTrainHistory(Thread):
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Validation'], loc='upper left')
-        plt.show()
+        plt.savefig(self.model_dir.joinpath(self.prefix + Path(self.model_dir).parent.name + '_loss.jpeg'))
+        plt.close()
