@@ -163,5 +163,6 @@ class ResNet50():
 
     def batch_norm(self, inputs):
         """Performs a batch normalization using a standard set of parameters."""
-        return BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
-                                    epsilon=_BATCH_NORM_EPSILON, scale=True)(inputs)
+        return inputs
+            # BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
+            #                         epsilon=_BATCH_NORM_EPSILON, scale=True)(inputs)

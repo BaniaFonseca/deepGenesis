@@ -21,6 +21,9 @@ class DataProcessing:
         self.TRAIN_SIZE = int(TRAIN_PROPORSION * self.DATASET_SIZE)
         self.TEST_SIZE = int(TEST_PROPORSION * self.DATASET_SIZE)
         self.VALIDATION_SIZE = int(VALIDATION_PROPORSION * self.DATASET_SIZE)
+        self.transformatios = [self.color_inversion, self.flip, self.blur,
+                              self.rotate, self.random_noise]
+
 
         self.processed_images = 0
 
@@ -74,7 +77,7 @@ class DataProcessing:
             filename = self.build_filename(TRAIN_DATA, path)
             self.save_img(filename, img)
             print(filename)
-            # self.augment(img, path)
+            self.augment(img, path)
 
     def build_filename(self, DATA_ROOT, img_path):
         filename = DATA_ROOT
@@ -128,8 +131,7 @@ class DataProcessing:
     def augment(self, img, path, transformatios=[], first=True):
 
         if first:
-            transformatios = [self.flip, self.blur,
-                              self.rotate, self.random_noise, self.color_inversion]
+            transformatios = [self.flip, self.blur, self.random_noise]
 
         if len(transformatios) > 0:
             for i, transf in enumerate(transformatios):

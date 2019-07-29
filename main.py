@@ -22,19 +22,20 @@ tr34 = TResNet34()
 tr50 = TResNet50()
 ti = TInception_v4()
 
+dp = DataProcessing()
+# dp.process_and_save_data()
+
+ds = Dataset()
+# ds.save_datasets_as_npy()
+
 train.start_training(tr34, retrain=False, model_dir=RESNET34_DIR_RES)
-# test_model.test(RESNET34_DIR_RES)
+
 
 # all = \
 #      [str(path) for path in list(ALL_DATA.glob('*/*'))]
 
 
 
-dp = DataProcessing()
-# dp.process_and_save_data()
-
-ds = Dataset()
-# ds.save_datasets_as_npy()
 
 
 # img1 = dp.read_img_and_clear_noise('data_root/test_data/empty/6.jpeg')

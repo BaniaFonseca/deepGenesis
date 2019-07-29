@@ -97,7 +97,9 @@ class Dataset():
 
     def generate_dataset(self, path, label='*'):
         all_image_paths = [str(path) for path in list(path.glob(label+'/*'))]
-        random.shuffle(all_image_paths, random.seed())
+        random.shuffle(all_image_paths, random.seed(DATASET_SEED))
+        random.shuffle(all_image_paths, random.seed(DATASET_SEED))
+
         label_to_index = dict((name, index) for index, name in enumerate(LABEL_NAMES))
         labels = \
             [label_to_index[pathlib.Path(path).parent.name] for path in all_image_paths]

@@ -14,7 +14,7 @@ class TResNet34(ResNet34):
     def train(self, train_images, train_labels, validation_images, validation_labels,
               retrain=False, prefix="", lr=1e-4, epochs=20):
 
-        mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath(prefix+'model.h5')), monitor='val_loss',
+        mc = ModelCheckpoint(str(RESNET34_DIR_RES.joinpath(prefix+'model.h5')), monitor='val_acc',
                              mode='auto', verbose=1, save_best_only=True)
         model = None
         adam = Adam(lr=lr)
@@ -45,7 +45,7 @@ class TResNet34(ResNet34):
         #     return None
 
 
-        history = model.fit(train_images, train_labels, epochs=epochs,
+        history = model.fit(train_images, train_labels, epochs=epochs, shuffle=True,
                   validation_data=(validation_images, validation_labels), callbacks=[mc], verbose=2)
 
         return history
