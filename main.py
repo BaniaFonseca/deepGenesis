@@ -28,7 +28,7 @@ dp = DataProcessing()
 ds = Dataset()
 # ds.save_datasets_as_npy()
 
-train.start_training(tr34, retrain=False, model_dir=RESNET34_DIR_RES)
+train.start_training(td, retrain=False, model_dir=DARKNET_DIR_RES)
 
 
 # all = \

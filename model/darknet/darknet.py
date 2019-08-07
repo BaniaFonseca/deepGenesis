@@ -28,24 +28,9 @@ class DarkNet():
         return model
 
     def batch_norm(self, inputs):
-        """Performs a batch normalization using a standard set of parameters."""
         return inputs
-        # return BatchNormalization (axis=3, momentum=_BATCH_NORM_DECAY,
-        #                             epsilon=_BATCH_NORM_EPSILON, scale=True)(inputs)
 
     def darknet53(self, inputs):
-        # inputs = Conv2D(filters=32, kernel_size=3, strides=1, padding='VALID',
-        #                 kernel_initializer='glorot_uniform',
-        #                 use_bias=False)(inputs)
-        # inputs = self.batch_norm(inputs)
-        # inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
-        #
-        # inputs = Conv2D(filters=64, kernel_size=3, strides=2, padding='VALID',
-        #                 kernel_initializer='glorot_uniform',
-        #                 use_bias=False)(inputs)
-        # inputs = self.batch_norm(inputs)
-        # inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
-
         inputs = Conv2D(filters=64, kernel_size=7, strides=2, padding='VALID', name='conv_1',
                         kernel_initializer='glorot_uniform', use_bias=False)(inputs)
         inputs = self.batch_norm(inputs)
@@ -84,11 +69,6 @@ class DarkNet():
         inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         inputs = self.conv_V(inputs)
-        #
-        # inputs = Conv2D(filters=2024, kernel_size=3, strides=2, padding='VALID',
-        #                 kernel_initializer='glorot_uniform', use_bias=False)(inputs)
-        # inputs = self.batch_norm(inputs)
-        # inputs = LeakyReLU(alpha=_LEAKY_RELU)(inputs)
 
         return inputs
 

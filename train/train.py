@@ -26,41 +26,30 @@ class Train:
         ds = Dataset()
         X, Y = ds.load_trainset()
         kfold_splits = 5
-        skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True, random_state=K_FOLD_SEED)
 
-        for k, (train, test) in enumerate(skf.split(X, Y), 1):
-            prefix = "fold_" + str(k) + "_"
-            print('fold:{}\n'.format(k))
+        # [(1, 7), (6, 1097), (11, 2017), (16, 2027), (21, 2087), (26, 2137)]
+        for fold, seed in zip([6, 11, 16, 21, 26], [1097, 2017, 2027, 2087, 2137]):
+            skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True, random_state=seed)
+            for k, (train, test) in enumerate(skf.split(X, Y), fold):
+                prefix = "fold_" + str(k) + "_"
+                print('fold:{}\n'.format(k))
 
-            for j, (lr, epochs) in enumerate([(1e-4, 40)]):
-                if j == 0:
-                    self.history = model.train(train_images=X[train], train_labels=Y[train],validation_images=X[test],
-                            validation_labels=Y[test], retrain=retrain, prefix=prefix, lr=lr, epochs=epochs)
+                for j, (lr, epochs) in enumerate([(1e-4, 40)]):
+                    if j == 0:
+                        self.history = model.train(train_images=X[train], train_labels=Y[train],validation_images=X[test],
+                                validation_labels=Y[test], retrain=retrain, prefix=prefix, lr=lr, epochs=epochs)
 
-                    plt.close()
-                    self.plot_train_history = PlotTrainHistory(history=self.history,                                                               model_dir=model_dir, prefix=prefix)
-                    self.plot_train_history.run()
-                else:
-                    self.history = model.train(train_images=X[train], train_labels=Y[train], validation_images=X[test],
+                        plt.close()
+                        self.plot_train_history = PlotTrainHistory(history=self.history,                                                               model_dir=model_dir, prefix=prefix)
+                        self.plot_train_history.run()
+                    else:
+                        self.history = model.train(train_images=X[train], train_labels=Y[train], validation_images=X[test],
                                 validation_labels=Y[test], retrain=True, prefix=prefix, lr=lr, epochs=epochs)
 
-                self.test_model = TestModel(model_dir=model_dir,test_images=X[test],test_labels=Y[test], prefix=prefix)
-                self.test_model.run()
-                plt.close()
-        print("Done!\n")
-
-    def augement(self, train_images, train_labels):
-        for path, label in zip(train_images, train_labels):
-
-            image = self.dp.read_img_and_clear_noise(path)
-            for transf in self.dp.transformatios:
-                t_img = transf(image)
-                self.vs.show_img(t_img)
-                train_images = np.append(train_images, t_img)
-                train_labels = np.append(train_labels, label)
-                break
-            break
-        return train_images, train_labels
+                    self.test_model = TestModel(model_dir=model_dir,test_images=X[test],test_labels=Y[test], prefix=prefix)
+                    self.test_model.run()
+                    plt.close()
+            print("Done! {}\n".format(fold))
 
 class PlotTrainHistory(Thread):
 

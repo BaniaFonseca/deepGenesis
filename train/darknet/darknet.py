@@ -11,14 +11,13 @@ class TDarknet(DarkNet):
     def __init__(self):
         pass
 
-    def train(self, train_images, train_labels, retrain=False):
-        ds = Dataset()
-        validation_images, validation_labels = ds.load_validationtest()
-        mc =  ModelCheckpoint(str(DARKNET_DIR_RES.joinpath('model.h5')), monitor='val_loss',
-                             mode='auto', verbose=1, save_best_only=True)
+    def train(self, train_images, train_labels, validation_images, validation_labels,
+              retrain=False, prefix="", lr=1e-4, epochs=20):
 
+        mc = ModelCheckpoint(str(DARKNET_DIR_RES.joinpath(prefix+'model.h5')), monitor='val_acc',
+                             mode='auto', verbose=1, save_best_only=True)
         model = None
-        adam = Adam(lr=1e-7)
+        adam = Adam(lr=lr)
 
         if not retrain:
             model = self.model()
@@ -32,15 +31,16 @@ class TDarknet(DarkNet):
                 loaded_model_json = json_file.read()
                 model = model_from_json(loaded_model_json)
             # load weights into new model
-            model.load_weights(str(DARKNET_DIR_RES.joinpath("model.h5")))
+            model.load_weights(str(DARKNET_DIR_RES.joinpath(prefix+"model.h5")))
             print("Loaded model from disk")
 
         model.compile(optimizer=adam, loss='sparse_categorical_crossentropy',
                       metrics=['accuracy'])
 
-
         # model.summary()
-        # plot_model(model, show_shapes=True, to_file=DARKNET_DIR_RES.joinpath('darknet53.png'))
+        # plot_model(model, show_shapes=True, to_file=DARKNET_DIR_RES.joinpath('resnet34.png'))
 
-        history = model.fit(train_images, train_labels, shuffle=True, epochs=10, verbose=2,
-                  validation_data=(validation_images, validation_labels), callbacks=[mc])
+        history = model.fit(train_images, train_labels, epochs=epochs,
+                  validation_data=(validation_images, validation_labels), callbacks=[mc], verbose=2)
+
+        return history
