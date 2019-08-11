@@ -28,6 +28,7 @@ class Train:
         kfold_splits = 5
 
         # [(1, 7), (6, 1097), (11, 2017), (16, 2027), (21, 2087), (26, 2137)]
+        # [6, 11, 16, 21, 26], [1097, 2017, 2027, 2087, 2137]
         for fold, seed in zip([6, 11, 16, 21, 26], [1097, 2017, 2027, 2087, 2137]):
             skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True, random_state=seed)
             for k, (train, test) in enumerate(skf.split(X, Y), fold):
