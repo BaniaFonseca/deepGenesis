@@ -3,6 +3,7 @@ from train.train import Train
 from dataset.data_processing import  DataProcessing
 from dataset.dataset import Dataset
 from util.visualize_dataset import VisualizeDataset
+from util.stats import Stats
 import tensorflow as tf
 from train.darknet.darknet import TDarknet
 from train.resnet34.resnet34 import TResNet34
@@ -14,7 +15,7 @@ import numpy as np
 print(tf.__version__)
 
 vs = VisualizeDataset()
-
+stats = Stats()
 train = Train()
 
 td = TDarknet()
@@ -28,8 +29,13 @@ dp = DataProcessing()
 ds = Dataset()
 # ds.save_datasets_as_npy()
 
-train.start_training(td, retrain=False, model_dir=DARKNET_DIR_RES)
+# train.start_training(tr50, retrain=False, model_dir=RESNET50_DIR_RES)
 
+
+# x = [37, 51, 53, 75]
+# y = [0.966, 0.974, 0.974, 0.987]
+#
+# stats.correlate(x, y)
 
 # all = \
 #      [str(path) for path in list(ALL_DATA.glob('*/*'))]

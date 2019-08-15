@@ -11,6 +11,7 @@ from util.visualize_dataset import VisualizeDataset
 import numpy as np
 from pathlib import Path
 from threading import Thread
+import os
 
 class TestModel(Thread):
 
@@ -63,6 +64,7 @@ class TestModel(Thread):
                 probs.append(pred[0][self.test_labels[i]])
 
         self.plot_pr_curve(self.test_labels, probs, y_hat, self.model_dir, self.prefix)
+        os.remove(str(self.model_dir.joinpath(self.prefix + "model.h5")))
 
     def plot_pr_curve(self, true_labels, probs, y_hat, model_dir=None, prefix=""):
         fig = plt.figure()
