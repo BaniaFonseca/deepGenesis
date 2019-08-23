@@ -25,6 +25,10 @@ class Inception_v4():
         X_input = Input((HEIGHT, WIDTH, CHANELS))
         X =  X_input
         X = self.inception_v4(X)
+
+        # X = Dense(CLASS_NUMBER, activation='softmax',
+        #           kernel_initializer='glorot_uniform')(X)
+
         X = Dense(CLASS_NUMBER, activation='softmax',
                   kernel_initializer='glorot_uniform')(X)
 

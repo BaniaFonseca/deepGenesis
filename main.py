@@ -27,13 +27,16 @@ dp = DataProcessing()
 # dp.process_and_save_data()
 
 ds = Dataset()
-# ds.save_datasets_as_npy()
+# ds.save_trainset_as_npy()
 
-# train.start_training(tr50, retrain=False, model_dir=RESNET50_DIR_RES)
+# images, labels = ds.load_testset()
+# vs.show_images(images, labels, cols=4, rows=2)
+
+train.start_training(ti, retrain=False, model_dir=INCEPTION_V4_DIR_RES)
 
 
 # x = [37, 51, 53, 75]
-# y = [0.966, 0.974, 0.974, 0.987]
+# y = [0.969, 0.974, 0.974, 0.987]
 #
 # stats.correlate(x, y)
 
@@ -83,7 +86,6 @@ ds = Dataset()
 # vs.show_images(images=images, labels=labels, cols=6, rows=3)
 
 #testset = ds.get_testset()
-#vs.show_images(dataset=testset, cols=1, rows=1)
 
 #trainset = ds.generate_dataset('processed_data/train')
 #print(trainset)

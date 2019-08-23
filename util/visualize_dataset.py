@@ -1,9 +1,11 @@
 from keras.preprocessing.image import load_img, img_to_array, array_to_img
 import numpy as np
 import pathlib
+from pathlib import Path
+from dataset.data_processing import DataProcessing
 from matplotlib import pyplot as plt
 import tensorflow as tf
-from config import LABEL_NAMES
+from config import *
 
 class VisualizeDataset:
 
@@ -54,16 +56,25 @@ class VisualizeDataset:
         plt.plot(width, height, '.r', label='Width x Height')
         plt.show()
 
-    def show_images(self, images, labels, cols=6, rows=3):
-        plt.figure(figsize=(32, 32))
+    def show_images(self, images, labels, cols=6, rows=2):
+
+        all = [str(path) for path in list(VALIDATION_DATA.glob('*/*'))]
+        dp = DataProcessing()
+
+        plt.figure(figsize=(64, 64))
         for n in range(cols * rows):
+            # image = dp.read_img_and_clear_noise(all[n])
             image =  images[n]
+
             plt.subplot(rows, cols, n + 1)
             plt.imshow(image)
             plt.colorbar()
             plt.xticks([])
             plt.yticks([])
+
             plt.xlabel(labels[n])
+            # plt.xlabel(Path(all[n]).name)
+
         plt.show()
 
     def show_img(self, img):

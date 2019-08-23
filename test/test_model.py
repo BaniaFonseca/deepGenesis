@@ -114,3 +114,28 @@ class TestModel(Thread):
             plt.savefig(model_dir.joinpath( prefix+Path(model_dir).parent.name+'_PR_curve.jpeg'))
 
         # plt.show()
+
+    def test_unseen_class(self):
+        loaded_model = None
+        adam = Adam(lr=1e-5)
+
+        with open(self.model_dir.joinpath('model.json'), 'r') as json_file:
+            loaded_model_json = json_file.read()
+            loaded_model = model_from_json(loaded_model_json)
+
+        loaded_model.load_weights(str(self.model_dir.joinpath(self.prefix + "model.h5")))
+        print("Loaded model from disk")
+        loaded_model.compile(loss='sparse_categorical_crossentropy',
+                             optimizer=adam, metrics=['accuracy'])
+        probs = list()
+
+        for i in range(len(self.test_labels)):
+            pred = loaded_model.predict(np.array([self.test_images[i],]))
+            print("{}: {}: max: {}".format (i, pred[0], np.max(pred[0])))
+            probs.append(np.max(pred[0]))
+
+        plt.xlabel("DATA")
+        plt.ylabel("PROBABLILITY")
+        plt.title("mean: {}".format(np.mean(probs)))
+        plt.scatter(np.arange(len(probs)), probs, s=100)
+        plt.show()

@@ -29,13 +29,13 @@ class Train:
 
         # [(1, 7), (6, 1097), (11, 2017), (16, 2027), (21, 2087), (26, 2137)]
         # [6, 11, 16, 21, 26], [1097, 2017, 2027, 2087, 2137]
-        for fold, seed in zip([26], [2137]):
+        for fold, seed in zip([1], [7]):
             skf = StratifiedKFold(n_splits=kfold_splits, shuffle=True, random_state=seed)
             for k, (train, test) in enumerate(skf.split(X, Y), fold):
                 prefix = "fold_" + str(k) + "_"
                 print('fold:{}\n'.format(k))
 
-                for j, (lr, epochs) in enumerate([(1e-4, 40)]):
+                for j, (lr, epochs) in enumerate([(1e-4, 30)]):
                     if j == 0:
                         self.history = model.train(train_images=X[train], train_labels=Y[train],validation_images=X[test],
                                 validation_labels=Y[test], retrain=retrain, prefix=prefix, lr=lr, epochs=epochs)
@@ -49,6 +49,12 @@ class Train:
 
                     self.test_model = TestModel(model_dir=model_dir,test_images=X[test],test_labels=Y[test], prefix=prefix)
                     self.test_model.run()
+
+                    # images, labels = ds.load_testset()
+                    # self.test_model = TestModel(model_dir=model_dir, test_images=images, test_labels=labels,
+                    #                             prefix=prefix)
+                    # self.test_model.test_unseen_class()
+
                     plt.close()
             print("Done! {}\n".format(fold))
 
